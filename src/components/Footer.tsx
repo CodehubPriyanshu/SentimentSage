@@ -91,12 +91,12 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-navy-dark text-gray-400 mt-auto">
+    <footer className="bg-navy-dark text-gray-400 dark:bg-navy-dark light:bg-white dark:text-gray-400 light:text-gray-600 mt-auto">
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Product Column */}
           <div>
-            <h3 className="text-white font-medium mb-4">PRODUCT</h3>
+            <h3 className="text-white dark:text-white light:text-navy font-medium mb-4">PRODUCT</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/features" className="hover:text-blue-light hover:underline transition-colors">
@@ -113,7 +113,7 @@ const Footer = () => {
           
           {/* Company Column */}
           <div>
-            <h3 className="text-white font-medium mb-4">COMPANY</h3>
+            <h3 className="text-white dark:text-white light:text-navy font-medium mb-4">COMPANY</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/about" className="hover:text-blue-light hover:underline transition-colors">
@@ -123,7 +123,7 @@ const Footer = () => {
               <li>
                 <button 
                   onClick={openOurTeamModal} 
-                  className="text-gray-400 hover:text-blue-light hover:underline transition-colors text-left"
+                  className="text-gray-400 dark:text-gray-400 light:text-gray-600 hover:text-blue-light hover:underline transition-colors text-left"
                 >
                   Our Team
                 </button>
@@ -133,12 +133,12 @@ const Footer = () => {
           
           {/* Legal Column */}
           <div>
-            <h3 className="text-white font-medium mb-4">LEGAL</h3>
+            <h3 className="text-white dark:text-white light:text-navy font-medium mb-4">LEGAL</h3>
             <ul className="space-y-2">
               <li>
                 <button 
                   onClick={openPrivacyPolicy} 
-                  className="text-gray-400 hover:text-blue-light hover:underline transition-colors text-left"
+                  className="text-gray-400 dark:text-gray-400 light:text-gray-600 hover:text-blue-light hover:underline transition-colors text-left"
                 >
                   Privacy Policy
                 </button>
@@ -146,7 +146,7 @@ const Footer = () => {
               <li>
                 <button 
                   onClick={openTermsOfService} 
-                  className="text-gray-400 hover:text-blue-light hover:underline transition-colors text-left"
+                  className="text-gray-400 dark:text-gray-400 light:text-gray-600 hover:text-blue-light hover:underline transition-colors text-left"
                 >
                   Terms of Service
                 </button>
@@ -156,7 +156,7 @@ const Footer = () => {
         </div>
         
         {/* Bottom row with copyright and support */}
-        <div className="flex flex-col md:flex-row justify-between items-center border-t border-gray-700 mt-8 pt-8">
+        <div className="flex flex-col md:flex-row justify-between items-center border-t border-gray-700 dark:border-gray-700 light:border-gray-300 mt-8 pt-8">
           <p className="text-sm">© 2025 SentimentSage. All rights reserved.</p>
           <div className="flex items-center mt-4 md:mt-0">
             <Mail className="h-4 w-4 mr-2" />

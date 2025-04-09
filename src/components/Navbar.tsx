@@ -11,6 +11,14 @@ import {
 import { Menu, X, User, ChevronDown, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 
+// Mock authentication checking
+// In a real app, you would use Firebase/Auth0 to check if the user is authenticated
+const isAuthenticated = (): boolean => {
+  // For demonstration purposes, this returns false
+  // In a real app, this would check the auth state
+  return false;
+};
+
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -44,17 +52,28 @@ const Navbar = () => {
             size="icon"
             onClick={toggleTheme}
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            className="text-white"
+            className="text-white dark:text-white light:text-navy"
           >
             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
           </Button>
           
-          <Link to="/login">
-            <Button variant="ghost" className="text-white">Login</Button>
-          </Link>
-          <Link to="/signup">
-            <Button className="bg-blue hover:bg-blue-light rounded-full">Sign Up</Button>
-          </Link>
+          {!isAuthenticated() ? (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" className="text-white dark:text-white light:text-navy">Login</Button>
+              </Link>
+              <Link to="/signup">
+                <Button className="bg-blue hover:bg-blue-light rounded-full">Sign Up</Button>
+              </Link>
+            </>
+          ) : (
+            <Link to="/profile">
+              <Button variant="ghost" className="text-white dark:text-white light:text-navy">
+                <User size={20} className="mr-2" />
+                Profile
+              </Button>
+            </Link>
+          )}
         </div>
         
         {/* Mobile Menu Button */}
@@ -65,13 +84,13 @@ const Navbar = () => {
             size="icon"
             onClick={toggleTheme}
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            className="text-white"
+            className="text-white dark:text-white light:text-navy"
           >
             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
           </Button>
           
           <button 
-            className="text-white"
+            className="text-white dark:text-white light:text-navy"
             onClick={toggleMenu}
             aria-label="Toggle Menu"
           >
@@ -82,19 +101,30 @@ const Navbar = () => {
       
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-16 bg-navy-dark z-50 px-6 pt-6 animate-fade-in">
+        <div className="md:hidden fixed inset-0 top-16 bg-navy-dark dark:bg-navy-dark light:bg-white z-50 px-6 pt-6 animate-fade-in">
           <div className="flex flex-col space-y-4">
             <Link to="/" className="nav-link text-lg" onClick={toggleMenu}>Home</Link>
             <Link to="/features" className="nav-link text-lg" onClick={toggleMenu}>Features</Link>
             <Link to="/how-to-use" className="nav-link text-lg" onClick={toggleMenu}>How to Use</Link>
             <Link to="/about" className="nav-link text-lg" onClick={toggleMenu}>About</Link>
-            <div className="border-t border-gray-700 my-4 pt-4">
-              <Link to="/login" onClick={toggleMenu}>
-                <Button variant="ghost" className="text-white w-full justify-start">Login</Button>
-              </Link>
-              <Link to="/signup" onClick={toggleMenu} className="mt-2 block">
-                <Button className="bg-blue hover:bg-blue-light w-full rounded-full">Sign Up</Button>
-              </Link>
+            <div className="border-t border-gray-700 dark:border-gray-700 light:border-gray-300 my-4 pt-4">
+              {!isAuthenticated() ? (
+                <>
+                  <Link to="/login" onClick={toggleMenu}>
+                    <Button variant="ghost" className="text-white dark:text-white light:text-navy w-full justify-start">Login</Button>
+                  </Link>
+                  <Link to="/signup" onClick={toggleMenu} className="mt-2 block">
+                    <Button className="bg-blue hover:bg-blue-light w-full rounded-full">Sign Up</Button>
+                  </Link>
+                </>
+              ) : (
+                <Link to="/profile" onClick={toggleMenu}>
+                  <Button variant="ghost" className="text-white dark:text-white light:text-navy w-full justify-start">
+                    <User size={20} className="mr-2" />
+                    Profile
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

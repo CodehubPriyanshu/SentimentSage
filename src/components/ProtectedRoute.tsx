@@ -6,9 +6,9 @@ import { toast } from "@/components/ui/use-toast";
 // Mock authentication checking
 // In a real app, you would use Firebase/Auth0 to check if the user is authenticated
 const isAuthenticated = (): boolean => {
-  // For demonstration purposes, this returns true
+  // For demonstration purposes, this returns false
   // In a real app, this would check the auth state
-  return true;
+  return false;
 };
 
 interface ProtectedRouteProps {

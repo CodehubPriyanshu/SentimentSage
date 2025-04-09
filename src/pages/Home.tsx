@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button";
 import { BadgeCheck, MessageSquare, TrendingUp, ChevronRight, Lightbulb, BarChart2, RefreshCw } from 'lucide-react';
 import ContentModal from '@/components/ContentModal';
 
+// Mock authentication checking
+const isAuthenticated = (): boolean => {
+  // For demonstration purposes, this returns false
+  return false;
+};
+
 interface SentimentBarProps {
   type: 'positive' | 'neutral' | 'negative';
   percentage: number;
@@ -131,29 +137,31 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy dark:bg-navy light:bg-white">
       <div className="container mx-auto px-4 pt-16 pb-24">
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Main Content */}
           <div className="flex-1 animate-fade-in">
-            <h1 className="text-4xl md:text-5xl font-bold text-white">
+            <h1 className="text-4xl md:text-5xl font-bold text-white dark:text-white light:text-navy">
               Understand Your <span className="text-blue">Audience</span> Through <span className="text-blue">AI Comment Analysis</span>
             </h1>
             
-            <p className="text-gray-400 text-lg mt-6 max-w-2xl">
+            <p className="text-gray-400 dark:text-gray-400 light:text-gray-600 text-lg mt-6 max-w-2xl">
               Analyze social media post comments to uncover sentiment, engagement patterns, and gain valuable insights into your audience.
             </p>
             
-            <div className="mt-8">
-              <Link to="/login">
-                <Button className="btn-primary text-lg px-6 py-3">
-                  Get Started <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-            </div>
+            {!isAuthenticated() && (
+              <div className="mt-8">
+                <Link to="/login">
+                  <Button className="bg-blue hover:bg-blue-light text-white font-medium rounded-full text-lg px-6 py-3 transition-transform hover:scale-105">
+                    Get Started <ChevronRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
+            )}
             
             <div className="mt-16">
-              <h2 className="text-2xl font-bold text-white mb-6">How SentimentSage Works</h2>
+              <h2 className="text-2xl font-bold text-white dark:text-white light:text-navy mb-6">How SentimentSage Works</h2>
               <div className="grid md:grid-cols-3 gap-8">
                 <StepCard 
                   icon={MessageSquare} 
@@ -172,7 +180,7 @@ const Home = () => {
                 />
               </div>
               <div className="text-center mt-8">
-                <Button variant="outline" onClick={openHowItWorks}>
+                <Button variant="outline" onClick={openHowItWorks} className="dark:text-white light:text-navy dark:border-white light:border-navy">
                   Learn More About Our Process
                 </Button>
               </div>
@@ -181,24 +189,24 @@ const Home = () => {
             <div className="mt-16 grid md:grid-cols-3 gap-8">
               <div className="card p-6 hover:shadow-xl transition-shadow">
                 <BadgeCheck className="h-12 w-12 text-blue mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">Accurate Analysis</h3>
-                <p className="text-gray-400">
+                <h3 className="text-xl font-bold text-white dark:text-white light:text-navy mb-2">Accurate Analysis</h3>
+                <p className="text-gray-400 dark:text-gray-400 light:text-gray-600">
                   Our AI provides precise sentiment analysis with over 95% accuracy.
                 </p>
               </div>
               
               <div className="card p-6 hover:shadow-xl transition-shadow">
                 <RefreshCw className="h-12 w-12 text-blue mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">Comment Processing</h3>
-                <p className="text-gray-400">
+                <h3 className="text-xl font-bold text-white dark:text-white light:text-navy mb-2">Comment Processing</h3>
+                <p className="text-gray-400 dark:text-gray-400 light:text-gray-600">
                   Analyze thousands of comments from multiple social platforms.
                 </p>
               </div>
               
               <div className="card p-6 hover:shadow-xl transition-shadow">
                 <TrendingUp className="h-12 w-12 text-blue mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">Trend Insights</h3>
-                <p className="text-gray-400">
+                <h3 className="text-xl font-bold text-white dark:text-white light:text-navy mb-2">Trend Insights</h3>
+                <p className="text-gray-400 dark:text-gray-400 light:text-gray-600">
                   Spot trends and shifts in audience sentiment over time.
                 </p>
               </div>
@@ -208,7 +216,7 @@ const Home = () => {
           {/* Sentiment Overview Sidebar */}
           <div className="lg:w-96 mt-12 lg:mt-0">
             <div className="card animate-fade-in">
-              <h2 className="text-xl font-bold text-white mb-4">Sentiment Overview</h2>
+              <h2 className="text-xl font-bold text-white dark:text-white light:text-navy mb-4">Sentiment Overview</h2>
               
               <div className="space-y-4 mb-6">
                 <SentimentBar type="positive" percentage={65} label="Positive" />
@@ -216,7 +224,7 @@ const Home = () => {
                 <SentimentBar type="negative" percentage={10} label="Negative" />
               </div>
               
-              <h3 className="text-lg font-medium text-white mb-3">Sample Comments</h3>
+              <h3 className="text-lg font-medium text-white dark:text-white light:text-navy mb-3">Sample Comments</h3>
               {sampleComments.map((comment, index) => (
                 <CommentCard 
                   key={index}
@@ -228,7 +236,7 @@ const Home = () => {
               
               <div className="mt-4 text-center">
                 <Link to="/login">
-                  <Button variant="outline" className="btn-secondary">
+                  <Button variant="outline" className="dark:text-white light:text-navy dark:border-white light:border-navy hover:bg-blue/10">
                     Try with your comments
                   </Button>
                 </Link>
