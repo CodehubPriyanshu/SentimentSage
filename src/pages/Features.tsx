@@ -60,7 +60,15 @@ const PlatformCard: React.FC<PlatformCardProps> = ({ icon: Icon, name, descripti
 
 const Features = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState({title: '', description: '', content: <></>});
+  const [modalContent, setModalContent] = useState<{
+    title: string;
+    description: string;
+    content: React.ReactNode; // Update the type to ReactNode
+  }>({
+    title: '',
+    description: '',
+    content: null // Initialize with null instead of an empty React element
+  });
 
   const openFeatureModal = (title: string, content: React.ReactNode) => {
     setModalContent({
