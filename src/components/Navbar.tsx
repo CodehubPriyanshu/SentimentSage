@@ -33,7 +33,6 @@ const Navbar = () => {
           <Link to="/" className="nav-link">Home</Link>
           <Link to="/features" className="nav-link">Features</Link>
           <Link to="/how-to-use" className="nav-link">How to Use</Link>
-          <Link to="/analyze" className="nav-link">Analyze</Link>
           <Link to="/about" className="nav-link">About</Link>
         </div>
         
@@ -54,7 +53,7 @@ const Navbar = () => {
             <Button variant="ghost" className="text-white">Login</Button>
           </Link>
           <Link to="/signup">
-            <Button className="bg-blue hover:bg-blue-light">Get Started</Button>
+            <Button className="bg-blue hover:bg-blue-light rounded-full">Sign Up</Button>
           </Link>
         </div>
         
@@ -88,14 +87,13 @@ const Navbar = () => {
             <Link to="/" className="nav-link text-lg" onClick={toggleMenu}>Home</Link>
             <Link to="/features" className="nav-link text-lg" onClick={toggleMenu}>Features</Link>
             <Link to="/how-to-use" className="nav-link text-lg" onClick={toggleMenu}>How to Use</Link>
-            <Link to="/analyze" className="nav-link text-lg" onClick={toggleMenu}>Analyze</Link>
             <Link to="/about" className="nav-link text-lg" onClick={toggleMenu}>About</Link>
             <div className="border-t border-gray-700 my-4 pt-4">
               <Link to="/login" onClick={toggleMenu}>
                 <Button variant="ghost" className="text-white w-full justify-start">Login</Button>
               </Link>
               <Link to="/signup" onClick={toggleMenu} className="mt-2 block">
-                <Button className="bg-blue hover:bg-blue-light w-full">Get Started</Button>
+                <Button className="bg-blue hover:bg-blue-light w-full rounded-full">Sign Up</Button>
               </Link>
             </div>
           </div>

@@ -67,7 +67,11 @@ const StepCard = ({ icon: Icon, title, description }: { icon: React.ElementType,
 
 const Home = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState({title: '', description: '', content: <></>});
+  const [modalContent, setModalContent] = useState<{title: string, description: string, content: React.ReactNode}>({
+    title: '', 
+    description: '', 
+    content: null
+  });
 
   const sampleComments = [
     {
@@ -141,9 +145,9 @@ const Home = () => {
             </p>
             
             <div className="mt-8">
-              <Link to="/analyze">
+              <Link to="/login">
                 <Button className="btn-primary text-lg px-6 py-3">
-                  Analyze Comments <ChevronRight className="ml-2 h-5 w-5" />
+                  Get Started <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
             </div>
@@ -223,7 +227,7 @@ const Home = () => {
               ))}
               
               <div className="mt-4 text-center">
-                <Link to="/analyze">
+                <Link to="/login">
                   <Button variant="outline" className="btn-secondary">
                     Try with your comments
                   </Button>

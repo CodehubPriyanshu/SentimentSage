@@ -16,7 +16,7 @@ interface ContentModalProps {
   onClose: () => void;
   title: string;
   description?: string;
-  children: React.ReactNode; // This ensures we can accept any valid React content
+  children: React.ReactNode;
 }
 
 const ContentModal = ({ isOpen, onClose, title, description, children }: ContentModalProps) => {
