@@ -1,8 +1,13 @@
 
 import Home from "./Home";
+import { ThemeProvider } from "@/hooks/useTheme";
 
 const Index = () => {
-  return <Home />;
+  return (
+    <ThemeProvider>
+      <Home />
+    </ThemeProvider>
+  );
 };
 
 export default Index;

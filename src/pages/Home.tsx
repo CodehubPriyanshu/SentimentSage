@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, MessageSquare, TrendingUp, ChevronRight } from 'lucide-react';
+import { BadgeCheck, MessageSquare, TrendingUp, ChevronRight, Lightbulb, BarChart2, RefreshCw } from 'lucide-react';
+import ContentModal from '@/components/ContentModal';
 
 interface SentimentBarProps {
   type: 'positive' | 'neutral' | 'negative';
@@ -54,7 +55,20 @@ const CommentCard: React.FC<CommentCardProps> = ({ comment, sentiment, author })
   );
 };
 
+const StepCard = ({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: string }) => (
+  <div className="card hover:shadow-xl transition-shadow p-6">
+    <div className="rounded-full bg-blue/10 p-3 w-14 h-14 flex items-center justify-center mb-4">
+      <Icon className="h-8 w-8 text-blue" />
+    </div>
+    <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+    <p className="text-gray-400">{description}</p>
+  </div>
+);
+
 const Home = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState({title: '', description: '', content: <></>});
+
   const sampleComments = [
     {
       comment: "This product is amazing! I've seen great results already.",
@@ -73,6 +87,45 @@ const Home = () => {
     }
   ];
 
+  const openHowItWorks = () => {
+    setModalContent({
+      title: 'How SentimentSage Works',
+      description: 'Learn more about our sentiment analysis process',
+      content: (
+        <div className="space-y-6 text-left">
+          <p className="text-gray-300">
+            SentimentSage uses advanced AI models to analyze social media comments and provide 
+            valuable insights into audience sentiment. Here's a more detailed breakdown of our process:
+          </p>
+          <div className="space-y-4">
+            <div className="card p-4">
+              <h4 className="text-lg font-bold text-white">1. Comment Collection</h4>
+              <p className="text-gray-300">
+                We gather comments from your social media posts across multiple platforms, preserving 
+                context and metadata for the most accurate analysis.
+              </p>
+            </div>
+            <div className="card p-4">
+              <h4 className="text-lg font-bold text-white">2. AI-Powered Analysis</h4>
+              <p className="text-gray-300">
+                Our sophisticated machine learning models analyze the comments to determine sentiment, 
+                identify key topics, and extract actionable insights.
+              </p>
+            </div>
+            <div className="card p-4">
+              <h4 className="text-lg font-bold text-white">3. Visualization & Reports</h4>
+              <p className="text-gray-300">
+                We transform the raw data into clear, intuitive visualizations and comprehensive 
+                reports that help you understand your audience better.
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+    });
+    setModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-navy">
       <div className="container mx-auto px-4 pt-16 pb-24">
@@ -84,7 +137,7 @@ const Home = () => {
             </h1>
             
             <p className="text-gray-400 text-lg mt-6 max-w-2xl">
-              Get real-time insights from social media comments. Discover what people are saying about your brand and make data-driven decisions.
+              Analyze social media post comments to uncover sentiment, engagement patterns, and gain valuable insights into your audience.
             </p>
             
             <div className="mt-8">
@@ -93,6 +146,32 @@ const Home = () => {
                   Analyze Comments <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
+            </div>
+            
+            <div className="mt-16">
+              <h2 className="text-2xl font-bold text-white mb-6">How SentimentSage Works</h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                <StepCard 
+                  icon={MessageSquare} 
+                  title="Collect Comments" 
+                  description="Gather comments from your social media posts with a simple URL or file upload."
+                />
+                <StepCard 
+                  icon={Lightbulb} 
+                  title="Analyze Sentiment" 
+                  description="Our AI processes each comment to determine sentiment and extract key insights."
+                />
+                <StepCard 
+                  icon={BarChart2} 
+                  title="Visualize Results" 
+                  description="View easy-to-understand charts and reports of your audience's sentiment."
+                />
+              </div>
+              <div className="text-center mt-8">
+                <Button variant="outline" onClick={openHowItWorks}>
+                  Learn More About Our Process
+                </Button>
+              </div>
             </div>
             
             <div className="mt-16 grid md:grid-cols-3 gap-8">
@@ -105,7 +184,7 @@ const Home = () => {
               </div>
               
               <div className="card p-6 hover:shadow-xl transition-shadow">
-                <MessageSquare className="h-12 w-12 text-blue mb-4" />
+                <RefreshCw className="h-12 w-12 text-blue mb-4" />
                 <h3 className="text-xl font-bold text-white mb-2">Comment Processing</h3>
                 <p className="text-gray-400">
                   Analyze thousands of comments from multiple social platforms.
@@ -154,6 +233,15 @@ const Home = () => {
           </div>
         </div>
       </div>
+      
+      <ContentModal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        title={modalContent.title}
+        description={modalContent.description}
+      >
+        {modalContent.content}
+      </ContentModal>
     </div>
   );
 };
