@@ -22,7 +22,7 @@ const Footer = () => {
       description: 'Meet the talented individuals behind SentimentSage',
       content: (
         <div className="space-y-8">
-          <p className="text-gray-300">
+          <p className="text-gray dark:text-gray light:text-gray-dark">
             SentimentSage was created as a final year project by BCA students at ITM University.
           </p>
           
@@ -35,14 +35,14 @@ const Footer = () => {
             ].map((member, index) => (
               <div key={index} className="bg-navy p-4 rounded-lg">
                 <h3 className="text-white font-medium">{member.name}</h3>
-                <p className="text-gray-400 text-sm">{member.role}</p>
+                <p className="text-gray text-sm">{member.role}</p>
               </div>
             ))}
           </div>
           
           <div className="bg-navy p-4 rounded-lg mt-6">
             <h3 className="text-white font-medium">Manish Jain</h3>
-            <p className="text-gray-400 text-sm">Faculty Mentor, ITM University</p>
+            <p className="text-gray text-sm">Faculty Mentor, ITM University</p>
           </div>
         </div>
       )
@@ -54,7 +54,7 @@ const Footer = () => {
     setModalContent({
       title: 'Privacy Policy',
       content: (
-        <div className="text-gray-300 space-y-4">
+        <div className="text-gray dark:text-gray light:text-gray-dark space-y-4">
           <p>
             SentimentSage analyzes only publicly available social media comments. We do not store your personal data, and analysis results are secured in your private dashboard, deletable at any time.
           </p>
@@ -74,7 +74,7 @@ const Footer = () => {
     setModalContent({
       title: 'Terms of Service',
       content: (
-        <div className="text-gray-300 space-y-4">
+        <div className="text-gray dark:text-gray light:text-gray-dark space-y-4">
           <p>
             By using SentimentSage, you agree to analyze public comments for sentiment insights, adhering to our usage policies and respecting platform terms.
           </p>
@@ -91,20 +91,20 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-navy-dark text-gray-400 dark:bg-navy-dark light:bg-white dark:text-gray-400 light:text-gray-600 mt-auto">
+    <footer className="bg-navy-dark text-gray dark:bg-navy-dark light:bg-gray-light dark:text-gray light:text-gray-dark mt-auto">
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Product Column */}
           <div>
-            <h3 className="text-white dark:text-white light:text-navy font-medium mb-4">PRODUCT</h3>
+            <h3 className="text-blue dark:text-blue light:text-blue font-medium mb-4">PRODUCT</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/features" className="hover:text-blue-light hover:underline transition-colors">
+                <Link to="/features" className="hover:text-blue-light dark:hover:text-blue-light light:hover:text-blue hover:underline transition-colors">
                   Features
                 </Link>
               </li>
               <li>
-                <Link to="/post-analysis" className="hover:text-blue-light hover:underline transition-colors">
+                <Link to="/post-analysis" className="hover:text-blue-light dark:hover:text-blue-light light:hover:text-blue hover:underline transition-colors">
                   Post Comment Analysis
                 </Link>
               </li>
@@ -113,17 +113,17 @@ const Footer = () => {
           
           {/* Company Column */}
           <div>
-            <h3 className="text-white dark:text-white light:text-navy font-medium mb-4">COMPANY</h3>
+            <h3 className="text-blue dark:text-blue light:text-blue font-medium mb-4">COMPANY</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/about" className="hover:text-blue-light hover:underline transition-colors">
+                <Link to="/about" className="hover:text-blue-light dark:hover:text-blue-light light:hover:text-blue hover:underline transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
                 <button 
                   onClick={openOurTeamModal} 
-                  className="text-gray-400 dark:text-gray-400 light:text-gray-600 hover:text-blue-light hover:underline transition-colors text-left"
+                  className="text-gray dark:text-gray light:text-gray-dark hover:text-blue-light dark:hover:text-blue-light light:hover:text-blue hover:underline transition-colors text-left"
                 >
                   Our Team
                 </button>
@@ -133,12 +133,12 @@ const Footer = () => {
           
           {/* Legal Column */}
           <div>
-            <h3 className="text-white dark:text-white light:text-navy font-medium mb-4">LEGAL</h3>
+            <h3 className="text-blue dark:text-blue light:text-blue font-medium mb-4">LEGAL</h3>
             <ul className="space-y-2">
               <li>
                 <button 
                   onClick={openPrivacyPolicy} 
-                  className="text-gray-400 dark:text-gray-400 light:text-gray-600 hover:text-blue-light hover:underline transition-colors text-left"
+                  className="text-gray dark:text-gray light:text-gray-dark hover:text-blue-light dark:hover:text-blue-light light:hover:text-blue hover:underline transition-colors text-left"
                 >
                   Privacy Policy
                 </button>
@@ -146,7 +146,7 @@ const Footer = () => {
               <li>
                 <button 
                   onClick={openTermsOfService} 
-                  className="text-gray-400 dark:text-gray-400 light:text-gray-600 hover:text-blue-light hover:underline transition-colors text-left"
+                  className="text-gray dark:text-gray light:text-gray-dark hover:text-blue-light dark:hover:text-blue-light light:hover:text-blue hover:underline transition-colors text-left"
                 >
                   Terms of Service
                 </button>

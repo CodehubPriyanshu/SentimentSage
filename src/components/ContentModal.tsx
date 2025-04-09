@@ -22,11 +22,11 @@ interface ContentModalProps {
 const ContentModal = ({ isOpen, onClose, title, description, children }: ContentModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-navy-light border-navy-dark dark:bg-navy-light light:bg-white light:border-gray-200 max-w-4xl max-h-[80vh] w-[90vw] overflow-hidden">
+      <DialogContent className="bg-navy-light border-navy-dark dark:bg-navy-light light:bg-white light:border-gray-light max-w-4xl max-h-[80vh] w-[90vw] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white dark:text-white light:text-navy">{title}</DialogTitle>
           {description && (
-            <DialogDescription className="text-gray-300 dark:text-gray-300 light:text-gray-600">
+            <DialogDescription className="text-gray dark:text-gray light:text-gray-dark">
               {description}
             </DialogDescription>
           )}

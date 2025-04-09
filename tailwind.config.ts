@@ -58,14 +58,19 @@ export default {
 				},
 				// Custom colors based on PRD
 				navy: {
-					DEFAULT: '#1A1F2E',
-					light: '#2D3348',
-					dark: '#151A27',
+					DEFAULT: '#0E0E10', // Updated to darker black
+					light: '#1C1C21', // Updated to gray-black accent
+					dark: '#0A0A0C', // Darker variant
 				},
 				blue: {
-					DEFAULT: '#007BFF',
-					light: '#3395FF',
-					dark: '#0066CC',
+					DEFAULT: '#1366C7', // Updated to Docker blue
+					light: '#2276D7', // Lighter variant
+					dark: '#0F56B3', // Darker variant
+				},
+				gray: {
+					DEFAULT: '#A9A9B2', // Light gray for text in dark mode
+					light: '#F5F5F5', // Light gray for accents in light mode
+					dark: '#333333', // Dark gray for text in light mode
 				},
 				sentiment: {
 					positive: '#4CAF50',

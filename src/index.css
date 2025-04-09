@@ -7,33 +7,33 @@
 
 @layer base {
   :root {
-    --background: 222 22% 18%;
+    --background: 240 10% 3.9%; /* Changed to dark black */
     --foreground: 0 0% 100%;
 
-    --card: 222 18% 20%;
+    --card: 240 5% 12%; /* Changed to gray-black accent */
     --card-foreground: 0 0% 100%;
 
-    --popover: 222 18% 20%;
+    --popover: 240 5% 12%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 210 100% 50%;
+    --primary: 214 70% 43%; /* Changed to Docker blue */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 222 18% 20%;
+    --secondary: 240 5% 12%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 222 18% 30%;
-    --muted-foreground: 0 0% 80%;
+    --muted: 240 5% 18%;
+    --muted-foreground: 240 5% 65%; /* Changed to light gray */
 
-    --accent: 210 100% 50%;
+    --accent: 214 70% 43%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 222 18% 25%;
-    --input: 222 18% 25%;
-    --ring: 210 100% 50%;
+    --border: 240 5% 15%;
+    --input: 240 5% 15%;
+    --ring: 214 70% 43%;
 
     --radius: 0.5rem;
 
@@ -48,25 +48,25 @@
   }
 
   .light {
-    --background: 0 0% 100%;
-    --foreground: 222 18% 20%;
+    --background: 0 0% 100%; /* Changed to white */
+    --foreground: 240 10% 10%; /* Changed to dark gray */
 
-    --card: 0 0% 98%;
-    --card-foreground: 222 18% 20%;
+    --card: 0 0% 96%; /* Changed to light gray accent */
+    --card-foreground: 240 10% 10%;
 
-    --popover: 0 0% 98%;
-    --popover-foreground: 222 18% 20%;
+    --popover: 0 0% 96%;
+    --popover-foreground: 240 10% 10%;
 
-    --primary: 210 100% 50%;
+    --primary: 214 70% 43%; /* Changed to Docker blue */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 96%;
-    --secondary-foreground: 222 18% 20%;
+    --secondary-foreground: 240 10% 10%;
 
     --muted: 0 0% 96%;
-    --muted-foreground: 222 18% 45%;
+    --muted-foreground: 240 5% 30%; /* Changed to dark gray */
 
-    --accent: 210 100% 50%;
+    --accent: 214 70% 43%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -74,7 +74,7 @@
 
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 210 100% 50%;
+    --ring: 214 70% 43%;
   }
 
   * {
@@ -95,8 +95,8 @@
     height: 100%;
     background: linear-gradient(
       135deg,
-      rgba(0, 123, 255, 0.05) 0%,
-      rgba(26, 31, 46, 0) 100%
+      rgba(19, 102, 199, 0.05) 0%, /* Updated to match Docker blue */
+      rgba(14, 14, 16, 0) 100% /* Updated to match new dark background */
     );
     z-index: -1;
     animation: gradientAnimation 10s ease infinite;
@@ -112,7 +112,7 @@
     height: 100%;
     background: linear-gradient(
       135deg,
-      rgba(0, 123, 255, 0.1) 0%,
+      rgba(19, 102, 199, 0.08) 0%, /* Updated to match Docker blue */
       rgba(255, 255, 255, 0) 100%
     );
     z-index: -1;
@@ -138,9 +138,9 @@
   }
   
   .nav-link {
-    @apply px-3 py-2 text-gray-200 hover:text-white transition-colors;
-    @apply dark:text-gray-200 dark:hover:text-white;
-    @apply light:text-navy-dark light:hover:text-blue;
+    @apply px-3 py-2 text-gray hover:text-white transition-colors;
+    @apply dark:text-gray dark:hover:text-white;
+    @apply light:text-gray-dark light:hover:text-blue;
   }
   
   .btn-primary {
@@ -154,13 +154,13 @@
   .card {
     @apply bg-navy-light rounded-lg p-6 shadow-lg;
     @apply dark:bg-navy-light;
-    @apply light:bg-white light:border light:border-gray-200;
+    @apply light:bg-gray-light light:border light:border-gray-200;
   }
   
   .input-field {
     @apply bg-navy-dark border border-border rounded-full px-4 py-2 w-full text-white focus:ring-2 focus:ring-blue focus:border-transparent outline-none;
     @apply dark:bg-navy-dark dark:text-white;
-    @apply light:bg-white light:text-navy-dark;
+    @apply light:bg-white light:text-navy;
   }
 }
 
