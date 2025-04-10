@@ -1,24 +1,43 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { toast } from "@/components/ui/use-toast";
-
-// Mock authentication checking
-// In a real app, you would use Firebase/Auth0 to check if the user is authenticated
-const isAuthenticated = (): boolean => {
-  // For demonstration purposes, this returns false
-  // In a real app, this would check the auth state
-  return false;
-};
+import { supabase } from "@/integrations/supabase/client";
+import { User } from '@supabase/supabase-js';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const authenticated = isAuthenticated();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   
-  if (!authenticated) {
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+  
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue"></div>
+    </div>;
+  }
+  
+  if (!user) {
     toast({
       title: "Authentication Required",
       description: "Please log in to access this page",

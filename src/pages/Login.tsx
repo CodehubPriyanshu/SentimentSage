@@ -1,18 +1,27 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from '@/hooks/useAuth';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { signIn, user } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [loading, setLoading] = useState(false);
+  
+  useEffect(() => {
+    // Redirect to home if already authenticated
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,32 +42,39 @@ const Login = () => {
     
     setLoading(true);
     
-    // Mock authentication - replace with actual Firebase/Auth0
     try {
-      // await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      setTimeout(() => {
+      const { error } = await signIn(formData.email, formData.password);
+      
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message || "Invalid email or password",
+          variant: "destructive"
+        });
+      } else {
         toast({
           title: "Success",
           description: "Logged in successfully",
         });
-        navigate('/analyze');
-      }, 1500);
+        navigate('/');
+      }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Invalid email or password",
+        description: "An unexpected error occurred",
         variant: "destructive"
       });
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-navy">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-navy dark:bg-navy light:bg-white">
       <div className="card max-w-md w-full animate-fade-in">
-        <h1 className="text-2xl font-bold text-white mb-2">Login</h1>
-        <p className="text-gray-400 mb-6">Access your sentiment analysis dashboard</p>
+        <h1 className="text-2xl font-bold text-white dark:text-white light:text-navy mb-2">Login</h1>
+        <p className="text-gray-400 dark:text-gray-400 light:text-gray-600 mb-6">Access your sentiment analysis dashboard</p>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -101,7 +117,7 @@ const Login = () => {
             {loading ? "Logging In..." : "Login"}
           </Button>
           
-          <p className="text-center text-gray-400 text-sm mt-6">
+          <p className="text-center text-gray-400 dark:text-gray-400 light:text-gray-600 text-sm mt-6">
             Don't have an account?{" "}
             <Link to="/signup" className="text-blue hover:underline">
               Sign up

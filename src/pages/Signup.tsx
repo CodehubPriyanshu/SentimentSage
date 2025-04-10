@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from '@/hooks/useAuth';
 
 const benefits = [
   "Analyze social media comments",
@@ -15,6 +16,7 @@ const benefits = [
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { signUp, user } = useAuth();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -22,6 +24,13 @@ const Signup = () => {
     agreed: false
   });
   const [loading, setLoading] = useState(false);
+  
+  useEffect(() => {
+    // Redirect to home if already authenticated
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -46,32 +55,43 @@ const Signup = () => {
     
     setLoading(true);
     
-    // Mock authentication - replace with actual Firebase/Auth0
     try {
-      // await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-      setTimeout(() => {
+      const { error } = await signUp(
+        formData.email, 
+        formData.password, 
+        formData.fullName
+      );
+      
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to create account",
+          variant: "destructive"
+        });
+      } else {
         toast({
           title: "Success",
-          description: "Account created successfully",
+          description: "Account created successfully. Please check your email to confirm your account.",
         });
-        navigate('/analyze');
-      }, 1500);
+        navigate('/login');
+      }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create account",
+        description: "An unexpected error occurred",
         variant: "destructive"
       });
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-navy">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-navy dark:bg-navy light:bg-white">
       <div className="card max-w-md w-full animate-fade-in">
-        <h1 className="text-2xl font-bold text-white mb-2">Create an account</h1>
-        <p className="text-gray-400 mb-6">Start analyzing social media sentiment</p>
+        <h1 className="text-2xl font-bold text-white dark:text-white light:text-navy mb-2">Create an account</h1>
+        <p className="text-gray-400 dark:text-gray-400 light:text-gray-600 mb-6">Start analyzing social media sentiment</p>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -113,7 +133,7 @@ const Signup = () => {
           </div>
           
           <div className="space-y-3 pt-2">
-            <p className="text-sm text-gray-300 mb-2">With SentimentSage, you can:</p>
+            <p className="text-sm text-gray-300 dark:text-gray-300 light:text-gray-600 mb-2">With SentimentSage, you can:</p>
             {benefits.map((benefit, index) => (
               <div key={index} className="flex items-start space-x-2">
                 <Checkbox 
@@ -122,7 +142,7 @@ const Signup = () => {
                   disabled
                   className="mt-1"
                 />
-                <Label htmlFor={`benefit-${index}`} className="text-gray-300 font-normal">
+                <Label htmlFor={`benefit-${index}`} className="text-gray-300 dark:text-gray-300 light:text-gray-600 font-normal">
                   {benefit}
                 </Label>
               </div>
@@ -137,7 +157,7 @@ const Signup = () => {
                 handleCheckboxChange('agreed', checked as boolean)
               }
             />
-            <Label htmlFor="agreed" className="text-sm text-gray-300 font-normal">
+            <Label htmlFor="agreed" className="text-sm text-gray-300 dark:text-gray-300 light:text-gray-600 font-normal">
               I agree to the <Link to="/terms" className="text-blue hover:underline">Terms of Service</Link> and <Link to="/privacy" className="text-blue hover:underline">Privacy Policy</Link>
             </Label>
           </div>
@@ -150,7 +170,7 @@ const Signup = () => {
             {loading ? "Creating Account..." : "Create Account"}
           </Button>
           
-          <p className="text-center text-gray-400 text-sm mt-6">
+          <p className="text-center text-gray-400 dark:text-gray-400 light:text-gray-600 text-sm mt-6">
             Already have an account?{" "}
             <Link to="/login" className="text-blue hover:underline">
               Log in

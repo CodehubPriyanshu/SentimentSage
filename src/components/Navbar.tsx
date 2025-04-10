@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -8,22 +8,37 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, X, User, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Menu, X, User, ChevronDown, Sun, Moon, LogOut, Settings } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
-
-// Mock authentication checking
-// In a real app, you would use Firebase/Auth0 to check if the user is authenticated
-const isAuthenticated = (): boolean => {
-  // For demonstration purposes, this returns false
-  // In a real app, this would check the auth state
-  return false;
-};
+import { useAuth } from '@/hooks/useAuth';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { user, profile, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/login');
+  };
+  
+  // Get user initials for avatar fallback
+  const getUserInitials = () => {
+    if (profile?.full_name) {
+      return profile.full_name
+        .split(' ')
+        .map((n: string) => n[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2);
+    }
+    
+    return user?.email?.substring(0, 2).toUpperCase() || 'U';
+  };
   
   return (
     <nav className="bg-navy-dark py-4 px-6 shadow-md dark:bg-navy-dark light:bg-white">
@@ -39,9 +54,9 @@ const Navbar = () => {
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-1">
           <Link to="/" className="nav-link">Home</Link>
-          <Link to="/features" className="nav-link">Features</Link>
           <Link to="/how-to-use" className="nav-link">How to Use</Link>
-          <Link to="/about" className="nav-link">About</Link>
+          <Link to="/post-comment-analysis" className="nav-link">Post Comment Analysis</Link>
+          {user && <Link to="/analyze" className="nav-link">Analyze Profile</Link>}
         </div>
         
         {/* User Menu */}
@@ -57,7 +72,7 @@ const Navbar = () => {
             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
           </Button>
           
-          {!isAuthenticated() ? (
+          {!user ? (
             <>
               <Link to="/login">
                 <Button variant="ghost" className="text-white dark:text-white light:text-navy">Login</Button>
@@ -67,12 +82,34 @@ const Navbar = () => {
               </Link>
             </>
           ) : (
-            <Link to="/profile">
-              <Button variant="ghost" className="text-white dark:text-white light:text-navy">
-                <User size={20} className="mr-2" />
-                Profile
-              </Button>
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center space-x-2 text-white dark:text-white light:text-navy">
+                  <Avatar className="h-8 w-8 border border-blue">
+                    <AvatarImage src={profile?.avatar_url} />
+                    <AvatarFallback className="bg-blue text-white">
+                      {getUserInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{profile?.full_name || user.email}</span>
+                  <ChevronDown size={16} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={() => navigate('/profile')}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/settings')}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
         
@@ -104,11 +141,12 @@ const Navbar = () => {
         <div className="md:hidden fixed inset-0 top-16 bg-navy-dark dark:bg-navy-dark light:bg-white z-50 px-6 pt-6 animate-fade-in">
           <div className="flex flex-col space-y-4">
             <Link to="/" className="nav-link text-lg" onClick={toggleMenu}>Home</Link>
-            <Link to="/features" className="nav-link text-lg" onClick={toggleMenu}>Features</Link>
             <Link to="/how-to-use" className="nav-link text-lg" onClick={toggleMenu}>How to Use</Link>
-            <Link to="/about" className="nav-link text-lg" onClick={toggleMenu}>About</Link>
+            <Link to="/post-comment-analysis" className="nav-link text-lg" onClick={toggleMenu}>Post Comment Analysis</Link>
+            {user && <Link to="/analyze" className="nav-link text-lg" onClick={toggleMenu}>Analyze Profile</Link>}
+            
             <div className="border-t border-gray-700 dark:border-gray-700 light:border-gray-300 my-4 pt-4">
-              {!isAuthenticated() ? (
+              {!user ? (
                 <>
                   <Link to="/login" onClick={toggleMenu}>
                     <Button variant="ghost" className="text-white dark:text-white light:text-navy w-full justify-start">Login</Button>
@@ -118,12 +156,25 @@ const Navbar = () => {
                   </Link>
                 </>
               ) : (
-                <Link to="/profile" onClick={toggleMenu}>
-                  <Button variant="ghost" className="text-white dark:text-white light:text-navy w-full justify-start">
-                    <User size={20} className="mr-2" />
-                    Profile
+                <>
+                  <Link to="/profile" onClick={toggleMenu}>
+                    <Button variant="ghost" className="text-white dark:text-white light:text-navy w-full justify-start">
+                      <User size={20} className="mr-2" />
+                      Profile
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    className="text-white dark:text-white light:text-navy w-full justify-start mt-2"
+                    onClick={() => {
+                      handleSignOut();
+                      toggleMenu();
+                    }}
+                  >
+                    <LogOut size={20} className="mr-2" />
+                    Log out
                   </Button>
-                </Link>
+                </>
               )}
             </div>
           </div>

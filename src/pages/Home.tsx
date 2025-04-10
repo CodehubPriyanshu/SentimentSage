@@ -4,12 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, MessageSquare, TrendingUp, ChevronRight, Lightbulb, BarChart2, RefreshCw } from 'lucide-react';
 import ContentModal from '@/components/ContentModal';
-
-// Mock authentication checking
-const isAuthenticated = (): boolean => {
-  // For demonstration purposes, this returns false
-  return false;
-};
+import { useAuth } from '@/hooks/useAuth';
 
 interface SentimentBarProps {
   type: 'positive' | 'neutral' | 'negative';
@@ -72,6 +67,7 @@ const StepCard = ({ icon: Icon, title, description }: { icon: React.ElementType,
 );
 
 const Home = () => {
+  const { user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<{title: string, description: string, content: React.ReactNode}>({
     title: '', 
@@ -151,10 +147,16 @@ const Home = () => {
             </p>
             
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
-              {!isAuthenticated() && (
+              {!user ? (
                 <Link to="/login">
                   <Button className="bg-blue hover:bg-blue-light text-white font-medium rounded-full text-lg px-6 py-3 transition-transform hover:scale-105">
                     Get Started <ChevronRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/analyze">
+                  <Button className="bg-blue hover:bg-blue-light text-white font-medium rounded-full text-lg px-6 py-3 transition-transform hover:scale-105">
+                    Analyze Profile <ChevronRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
               )}
@@ -241,11 +243,19 @@ const Home = () => {
               ))}
               
               <div className="mt-4 text-center">
-                <Link to="/login">
-                  <Button variant="outline" className="dark:text-white light:text-navy dark:border-white light:border-navy hover:bg-blue/10">
-                    Try with your comments
-                  </Button>
-                </Link>
+                {!user ? (
+                  <Link to="/login">
+                    <Button variant="outline" className="dark:text-white light:text-navy dark:border-white light:border-navy hover:bg-blue/10">
+                      Try with your comments
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to="/analyze">
+                    <Button variant="outline" className="dark:text-white light:text-navy dark:border-white light:border-navy hover:bg-blue/10">
+                      Analyze your comments
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
