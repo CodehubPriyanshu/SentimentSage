@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu, X, User, ChevronDown, Sun, Moon, LogOut, Settings } from 'lucide-react';
+import { Menu, X, User, LogOut, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -62,24 +62,25 @@ const Navbar = () => {
           <span className="text-xl font-bold text-white dark:text-white light:text-navy">Sentiment<span className="text-blue">Sage</span></span>
         </Link>
         
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center space-x-1">
+        {/* Desktop Menu - Using flexbox for adjustable layout */}
+        <div className="hidden md:flex items-center space-x-4 flex-grow justify-center">
           <Link to="/" className={`nav-link ${isActive("/")}`}>Home</Link>
           <Link to="/how-to-use" className={`nav-link ${isActive("/how-to-use")}`}>How to Use</Link>
           {user ? (
             <>
               <Link to="/post-comment-analysis" className={`nav-link ${isActive("/post-comment-analysis")}`}>
-                Select Social Media to Analyze
+                Social Media
               </Link>
               <Link to="/analyze" className={`nav-link ${isActive("/analyze")}`}>
                 Text Analysis
               </Link>
             </>
           ) : (
-            <Link to="/post-comment-analysis" className={`nav-link ${isActive("/post-comment-analysis")}`}>
-              Post Comment Analysis
+            <Link to="/analyze" className={`nav-link ${isActive("/analyze")}`}>
+              Text Analysis
             </Link>
           )}
+          <Link to="/about" className={`nav-link ${isActive("/about")}`}>About</Link>
         </div>
         
         {/* User Menu */}
@@ -107,29 +108,23 @@ const Navbar = () => {
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 text-white dark:text-white light:text-navy">
-                  <Avatar className="h-8 w-8 border border-blue">
+                <Button variant="ghost" className="p-0 h-10 w-10 rounded-full overflow-hidden border-2 border-blue">
+                  <Avatar className="h-full w-full">
                     <AvatarImage src={profile?.avatar_url} />
                     <AvatarFallback className="bg-blue text-white">
                       {getUserInitials()}
                     </AvatarFallback>
                   </Avatar>
-                  <span>{profile?.full_name || user.email}</span>
-                  <ChevronDown size={16} />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={() => navigate('/profile')}>
+              <DropdownMenuContent align="end" className="w-40 dark:bg-navy-light light:bg-gray-light">
+                <DropdownMenuItem onClick={() => navigate('/profile')} className="text-blue dark:text-blue light:text-blue">
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/settings')}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSignOut}>
+                <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span>Logout</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -165,19 +160,20 @@ const Navbar = () => {
           <div className="flex flex-col space-y-4">
             <Link to="/" className={`nav-link text-lg ${isActive("/")}`} onClick={toggleMenu}>Home</Link>
             <Link to="/how-to-use" className={`nav-link text-lg ${isActive("/how-to-use")}`} onClick={toggleMenu}>How to Use</Link>
+            <Link to="/about" className={`nav-link text-lg ${isActive("/about")}`} onClick={toggleMenu}>About</Link>
             
             {user ? (
               <>
                 <Link to="/post-comment-analysis" className={`nav-link text-lg ${isActive("/post-comment-analysis")}`} onClick={toggleMenu}>
-                  Select Social Media to Analyze
+                  Social Media
                 </Link>
                 <Link to="/analyze" className={`nav-link text-lg ${isActive("/analyze")}`} onClick={toggleMenu}>
                   Text Analysis
                 </Link>
               </>
             ) : (
-              <Link to="/post-comment-analysis" className={`nav-link text-lg ${isActive("/post-comment-analysis")}`} onClick={toggleMenu}>
-                Post Comment Analysis
+              <Link to="/analyze" className={`nav-link text-lg ${isActive("/analyze")}`} onClick={toggleMenu}>
+                Text Analysis
               </Link>
             )}
             
@@ -194,14 +190,14 @@ const Navbar = () => {
               ) : (
                 <>
                   <Link to="/profile" onClick={toggleMenu}>
-                    <Button variant="ghost" className="text-white dark:text-white light:text-navy w-full justify-start">
+                    <Button variant="ghost" className="text-blue dark:text-blue light:text-blue w-full justify-start">
                       <User size={20} className="mr-2" />
                       Profile
                     </Button>
                   </Link>
                   <Button 
                     variant="ghost" 
-                    className="text-white dark:text-white light:text-navy w-full justify-start mt-2"
+                    className="text-red-500 w-full justify-start mt-2"
                     onClick={() => {
                       handleSignOut();
                       toggleMenu();

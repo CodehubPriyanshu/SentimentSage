@@ -135,7 +135,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-navy dark:bg-navy light:bg-white">
+    <div className="min-h-screen bg-navy dark:bg-navy light:bg-white transition-colors duration-300">
       <div className="container mx-auto px-4 pt-16 pb-24">
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Main Content */}
@@ -172,9 +172,9 @@ const Home = () => {
                   Select Social Media to Analyze
                 </Button>
               ) : (
-                <Link to="/post-comment-analysis">
+                <Link to="/analyze">
                   <Button variant="outline" className="rounded-full text-lg px-6 py-3 dark:text-white light:text-navy dark:border-white light:border-navy transition-transform hover:scale-105">
-                    Post Comment Analysis
+                    Text Analysis
                   </Button>
                 </Link>
               )}

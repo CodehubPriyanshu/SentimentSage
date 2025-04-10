@@ -39,6 +39,16 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');
     }
+
+    // Add transition class for smooth theme switching
+    document.documentElement.classList.add('theme-transition');
+    
+    // Remove transition class after a delay to prevent transition on page load
+    const timer = setTimeout(() => {
+      document.documentElement.classList.remove('theme-transition');
+    }, 300);
+    
+    return () => clearTimeout(timer);
   }, [theme]);
 
   const toggleTheme = () => {

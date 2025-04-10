@@ -32,7 +32,7 @@ const SocialMediaModal = ({ isOpen, onClose }: SocialMediaModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-navy-light border-navy-dark dark:bg-navy-light light:bg-gray-light max-w-md w-[90vw]">
+      <DialogContent className="bg-navy-light border-navy-dark dark:bg-navy-light light:bg-gray-light max-w-md w-[90vw] transition-all duration-300">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white dark:text-white light:text-navy">Select Social Media Platform</DialogTitle>
           <DialogDescription className="text-gray dark:text-gray light:text-gray-dark">

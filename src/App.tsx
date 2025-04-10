@@ -32,9 +32,9 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <div className="min-h-screen flex flex-col bg-navy dark:bg-navy light:bg-white">
+            <div className="min-h-screen flex flex-col bg-navy dark:bg-navy light:bg-white transition-colors duration-300">
               <Navbar />
-              <main className="flex-grow">
+              <main className="flex-grow transition-all duration-300">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/login" element={<Login />} />

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from '@/hooks/useAuth';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Login = () => {
     password: '',
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   
   useEffect(() => {
     // Redirect to home if already authenticated
@@ -26,6 +28,10 @@ const Login = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,7 +77,7 @@ const Login = () => {
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-navy dark:bg-navy light:bg-white">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-navy dark:bg-navy light:bg-white transition-colors duration-300">
       <div className="card max-w-md w-full animate-fade-in">
         <h1 className="text-2xl font-bold text-white dark:text-white light:text-navy mb-2">Login</h1>
         <p className="text-gray-400 dark:text-gray-400 light:text-gray-600 mb-6">Access your sentiment analysis dashboard</p>
@@ -92,15 +98,25 @@ const Login = () => {
           
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Enter your password"
-              className="input-field"
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                className="input-field pr-10"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-blue focus:outline-none"
+                onClick={togglePasswordVisibility}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
           
           <div className="flex justify-end">
@@ -111,7 +127,7 @@ const Login = () => {
           
           <Button 
             type="submit" 
-            className="w-full bg-blue hover:bg-blue-light"
+            className="w-full bg-blue hover:bg-blue-light transition-colors duration-300"
             disabled={loading}
           >
             {loading ? "Logging In..." : "Login"}
