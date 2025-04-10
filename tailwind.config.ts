@@ -58,13 +58,13 @@ export default {
 				},
 				// Custom colors based on PRD
 				navy: {
-					DEFAULT: '#0E0E10', // Updated to darker black
-					light: '#1C1C21', // Updated to gray-black accent
+					DEFAULT: '#0E0E10', // Dark black
+					light: '#1C1C21', // Gray-black accent
 					dark: '#0A0A0C', // Darker variant
 				},
 				blue: {
-					DEFAULT: '#1366C7', // Updated to Docker blue
-					light: '#2276D7', // Lighter variant
+					DEFAULT: '#1366C7', // Docker blue
+					light: '#66B0FF', // Lighter variant for hover
 					dark: '#0F56B3', // Darker variant
 				},
 				gray: {

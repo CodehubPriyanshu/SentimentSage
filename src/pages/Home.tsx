@@ -147,18 +147,24 @@ const Home = () => {
             </h1>
             
             <p className="text-gray-400 dark:text-gray-400 light:text-gray-600 text-lg mt-6 max-w-2xl">
-              Analyze social media post comments to uncover sentiment, engagement patterns, and gain valuable insights into your audience.
+              Free to access comment analysis in text to uncover sentiment, engagement patterns, and gain valuable insights into your audience.
             </p>
             
-            {!isAuthenticated() && (
-              <div className="mt-8">
+            <div className="mt-8 flex flex-col sm:flex-row gap-4">
+              {!isAuthenticated() && (
                 <Link to="/login">
                   <Button className="bg-blue hover:bg-blue-light text-white font-medium rounded-full text-lg px-6 py-3 transition-transform hover:scale-105">
                     Get Started <ChevronRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-              </div>
-            )}
+              )}
+              
+              <Link to="/post-comment-analysis">
+                <Button variant="outline" className="rounded-full text-lg px-6 py-3 dark:text-white light:text-navy dark:border-white light:border-navy transition-transform hover:scale-105">
+                  Post Comment Analysis
+                </Button>
+              </Link>
+            </div>
             
             <div className="mt-16">
               <h2 className="text-2xl font-bold text-white dark:text-white light:text-navy mb-6">How SentimentSage Works</h2>

@@ -15,6 +15,7 @@ import Analyze from "@/pages/Analyze";
 import Profile from "@/pages/Profile";
 import Features from "@/pages/Features";
 import NotFound from "@/pages/NotFound";
+import PostCommentAnalysis from "@/pages/PostCommentAnalysis";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { ThemeProvider } from "@/hooks/useTheme";
 
@@ -36,6 +37,7 @@ const App = () => (
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/features" element={<Features />} />
+                <Route path="/post-comment-analysis" element={<PostCommentAnalysis />} />
                 <Route path="/how-to-use" element={<HowToUse />} />
                 <Route 
                   path="/analyze" 

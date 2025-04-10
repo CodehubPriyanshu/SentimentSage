@@ -28,14 +28,13 @@ const Footer = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {[
-              { name: 'Priyanshu Kumar', role: 'Lead Developer' },
-              { name: 'Vibhu Chaturvedi', role: 'Machine Learning Engineer' },
-              { name: 'Vikas Rawat', role: 'Frontend Developer' },
-              { name: 'Ankit Kumar', role: 'Backend Developer' }
+              { name: 'Priyanshu Kumar' },
+              { name: 'Vibhu Chaturvedi' },
+              { name: 'Vikas Rawat' },
+              { name: 'Ankit Kumar' }
             ].map((member, index) => (
               <div key={index} className="bg-navy p-4 rounded-lg">
                 <h3 className="text-white font-medium">{member.name}</h3>
-                <p className="text-gray text-sm">{member.role}</p>
               </div>
             ))}
           </div>
@@ -104,7 +103,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/post-analysis" className="hover:text-blue-light dark:hover:text-blue-light light:hover:text-blue hover:underline transition-colors">
+                <Link to="/how-to-use" className="hover:text-blue-light dark:hover:text-blue-light light:hover:text-blue hover:underline transition-colors">
+                  How to Use
+                </Link>
+              </li>
+              <li>
+                <Link to="/post-comment-analysis" className="hover:text-blue-light dark:hover:text-blue-light light:hover:text-blue hover:underline transition-colors">
                   Post Comment Analysis
                 </Link>
               </li>
