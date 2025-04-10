@@ -1,172 +1,222 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-
-// Simple sentiment analysis function using keyword matching
-const analyzeSentiment = (text: string): { sentiment: 'positive' | 'negative' | 'neutral', explanation: string } => {
-  // Convert text to lowercase for case-insensitive matching
-  const lowerText = text.toLowerCase();
-  
-  // English positive keywords
-  const englishPositive = ['good', 'great', 'excellent', 'amazing', 'love', 'happy', 'wonderful', 'fantastic', 'best', 'awesome'];
-  // English negative keywords
-  const englishNegative = ['bad', 'terrible', 'horrible', 'hate', 'awful', 'worst', 'poor', 'disappointed', 'unhappy', 'sad'];
-  
-  // Spanish keywords
-  const spanishPositive = ['bueno', 'excelente', 'increíble', 'amor', 'feliz', 'maravilloso', 'fantástico', 'mejor', 'asombroso'];
-  const spanishNegative = ['malo', 'terrible', 'horrible', 'odio', 'peor', 'pobre', 'decepcionado', 'infeliz', 'triste'];
-  
-  // French keywords
-  const frenchPositive = ['bon', 'excellent', 'incroyable', 'amour', 'heureux', 'merveilleux', 'fantastique', 'meilleur'];
-  const frenchNegative = ['mauvais', 'terrible', 'horrible', 'déteste', 'pire', 'pauvre', 'déçu', 'malheureux', 'triste'];
-  
-  // German keywords
-  const germanPositive = ['gut', 'ausgezeichnet', 'erstaunlich', 'liebe', 'glücklich', 'wunderbar', 'fantastisch', 'beste'];
-  const germanNegative = ['schlecht', 'schrecklich', 'hassen', 'schlimmste', 'arm', 'enttäuscht', 'unglücklich', 'traurig'];
-  
-  // Russian keywords (transliterated)
-  const russianPositive = ['хорошо', 'отлично', 'удивительно', 'любовь', 'счастливый', 'замечательно', 'фантастический', 'лучший'];
-  const russianNegative = ['плохо', 'ужасно', 'ненавидеть', 'худший', 'разочарованный', 'несчастный', 'грустный'];
-  
-  // Hindi keywords (transliterated)
-  const hindiPositive = ['अच्छा', 'उत्कृष्ट', 'अद्भुत', 'प्यार', 'खुश', 'शानदार', 'बेहतरीन'];
-  const hindiNegative = ['बुरा', 'भयानक', 'नफरत', 'बदतरीन', 'निराश', 'दुखी', 'उदास'];
-  
-  // Combine all positive and negative keywords
-  const positiveKeywords = [
-    ...englishPositive, ...spanishPositive, ...frenchPositive, 
-    ...germanPositive, ...russianPositive, ...hindiPositive
-  ];
-  
-  const negativeKeywords = [
-    ...englishNegative, ...spanishNegative, ...frenchNegative, 
-    ...germanNegative, ...russianNegative, ...hindiNegative
-  ];
-  
-  // Count occurrences of positive and negative keywords
-  let positiveCount = 0;
-  let negativeCount = 0;
-  
-  positiveKeywords.forEach(keyword => {
-    if (lowerText.includes(keyword)) {
-      positiveCount++;
-    }
-  });
-  
-  negativeKeywords.forEach(keyword => {
-    if (lowerText.includes(keyword)) {
-      negativeCount++;
-    }
-  });
-  
-  // Determine sentiment based on counts
-  if (positiveCount > negativeCount) {
-    return { 
-      sentiment: 'positive',
-      explanation: "This text has a positive tone due to enthusiastic words." 
-    };
-  } else if (negativeCount > positiveCount) {
-    return { 
-      sentiment: 'negative',
-      explanation: "This text has a negative tone due to critical words." 
-    };
-  } else {
-    return { 
-      sentiment: 'neutral',
-      explanation: "This text appears to have a neutral tone or balanced positive and negative elements." 
-    };
-  }
-};
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, Send, ArrowRight } from 'lucide-react';
+import { toast } from "@/components/ui/use-toast";
+import SocialMediaModal from "@/components/SocialMediaModal";
+import { useAuth } from "@/hooks/useAuth";
 
 const PostCommentAnalysis = () => {
-  const [text, setText] = useState('');
-  const [result, setResult] = useState<{ 
-    sentiment: 'positive' | 'negative' | 'neutral', 
-    explanation: string 
-  } | null>(null);
-  
+  const { user } = useAuth();
+  const [comment, setComment] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [result, setResult] = useState<null | {
+    sentiment: 'positive' | 'neutral' | 'negative';
+    score: number;
+    explanation: string;
+  }>(null);
+  const [socialModalOpen, setSocialModalOpen] = useState(false);
+
   const handleAnalyze = () => {
-    if (text.trim()) {
-      const analysis = analyzeSentiment(text);
-      setResult(analysis);
+    if (!comment.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a comment to analyze",
+        variant: "destructive"
+      });
+      return;
     }
+    
+    setIsAnalyzing(true);
+    
+    // Mock analysis - replace with actual API call
+    setTimeout(() => {
+      // Determine sentiment based on content
+      let sentiment: 'positive' | 'neutral' | 'negative';
+      let score: number;
+      let explanation: string;
+      
+      const lowerComment = comment.toLowerCase();
+      
+      if (lowerComment.includes('love') || lowerComment.includes('great') || lowerComment.includes('good') || lowerComment.includes('amazing')) {
+        sentiment = 'positive';
+        score = Math.random() * 0.3 + 0.7; // 0.7 - 1.0
+        explanation = "This message is positive because it contains enthusiastic words like 'love', 'great', or 'amazing'. The tone appears to express satisfaction or happiness.";
+      } else if (lowerComment.includes('bad') || lowerComment.includes('hate') || lowerComment.includes('terrible') || lowerComment.includes('awful')) {
+        sentiment = 'negative';
+        score = Math.random() * 0.3; // 0.0 - 0.3
+        explanation = "This message is negative because it contains critical words like 'bad', 'hate', or 'terrible'. The tone appears to express dissatisfaction or frustration.";
+      } else {
+        sentiment = 'neutral';
+        score = Math.random() * 0.4 + 0.3; // 0.3 - 0.7
+        explanation = "This message is neutral because it doesn't contain strongly positive or negative language. The tone appears to be balanced or factual.";
+      }
+      
+      setResult({
+        sentiment,
+        score,
+        explanation
+      });
+      
+      setIsAnalyzing(false);
+      
+      toast({
+        title: "Analysis Complete",
+        description: "Your comment has been analyzed",
+      });
+    }, 1500);
   };
-  
-  const sentimentEmoji = {
-    positive: '👍',
-    negative: '👎',
-    neutral: '🤷'
+
+  const getSentimentColor = (sentiment: 'positive' | 'neutral' | 'negative') => {
+    const colors = {
+      positive: 'bg-sentiment-positive text-white',
+      neutral: 'bg-sentiment-neutral text-navy-dark',
+      negative: 'bg-sentiment-negative text-white',
+    };
+    return colors[sentiment];
   };
-  
-  const sentimentColor = {
-    positive: 'text-sentiment-positive',
-    negative: 'text-sentiment-negative',
-    neutral: 'text-sentiment-neutral'
+
+  const getSentimentEmoji = (sentiment: 'positive' | 'neutral' | 'negative') => {
+    const emojis = {
+      positive: '😊',
+      neutral: '😐',
+      negative: '😞',
+    };
+    return emojis[sentiment];
   };
-  
+
   return (
     <div className="min-h-screen bg-navy dark:bg-navy light:bg-white">
       <div className="container mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold text-white dark:text-white light:text-navy mb-8 text-center">
-          Post Comment <span className="text-blue">Analysis</span>
-        </h1>
-        
-        <div className="max-w-2xl mx-auto">
-          <Card className="dark:bg-navy-light light:bg-gray-light mb-8">
+        <div className="max-w-4xl mx-auto animate-fade-in">
+          <h1 className="text-3xl md:text-4xl font-bold text-white dark:text-white light:text-navy text-center mb-4">
+            {user ? "Select Social Media to Analyze" : "Post Comment Analysis"}
+          </h1>
+          
+          <p className="text-gray-300 dark:text-gray-300 light:text-gray-dark text-lg text-center mb-8">
+            {user 
+              ? "Choose a platform to analyze or paste a single comment below for quick sentiment analysis"
+              : "Paste a comment below to see how our sentiment analysis works"
+            }
+          </p>
+
+          {user && (
+            <div className="flex justify-center mb-8">
+              <Button 
+                className="bg-blue hover:bg-blue-light text-white font-medium rounded-full px-6 py-3 transition-transform hover:scale-105"
+                onClick={() => setSocialModalOpen(true)}
+              >
+                Choose a Social Platform <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+          )}
+          
+          <Card className="bg-navy-light dark:bg-navy-light light:bg-gray-light border-gray-700 mb-8">
             <CardHeader>
-              <CardTitle className="text-white dark:text-white light:text-navy">
-                Analyze Your Comment
-              </CardTitle>
+              <CardTitle className="text-white dark:text-white light:text-navy">Single Comment Analysis</CardTitle>
+              <CardDescription className="text-gray-400 dark:text-gray-400 light:text-gray-dark">
+                Paste a single comment to analyze its sentiment
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <textarea 
-                  className="w-full h-32 px-4 py-2 rounded-lg bg-navy-dark dark:bg-navy-dark light:bg-white text-white dark:text-white light:text-navy-dark border border-border resize-none focus:outline-none focus:ring-2 focus:ring-blue"
-                  placeholder="Paste your comment here in any supported language (English, Spanish, French, German, Russian, Hindi)..."
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                ></textarea>
-                
-                <Button 
-                  className="w-full bg-blue hover:bg-blue-light text-white font-medium py-3 rounded-full transition-transform hover:scale-105"
-                  onClick={handleAnalyze}
-                  disabled={!text.trim()}
-                >
-                  Analyze
-                </Button>
+                <Textarea 
+                  placeholder="Enter a comment to analyze..."
+                  className="input-field min-h-[120px]"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
               </div>
             </CardContent>
+            <CardFooter className="flex justify-end">
+              <Button 
+                className="btn-primary"
+                onClick={handleAnalyze}
+                disabled={isAnalyzing || !comment.trim()}
+              >
+                {isAnalyzing ? (
+                  <>Analyzing...</>
+                ) : (
+                  <>
+                    <Send className="mr-2 h-4 w-4" />
+                    Analyze Comment
+                  </>
+                )}
+              </Button>
+            </CardFooter>
           </Card>
+
+          {!result && !isAnalyzing && (
+            <Alert className="bg-navy-dark dark:bg-navy-dark light:bg-gray-light border-blue border-opacity-50">
+              <AlertCircle className="h-4 w-4 text-blue" />
+              <AlertTitle className="text-white dark:text-white light:text-navy">How It Works</AlertTitle>
+              <AlertDescription className="text-gray-300 dark:text-gray-300 light:text-gray-dark">
+                Enter a comment above and click "Analyze Comment" to see the sentiment analysis results. Our AI will classify the comment as positive, neutral, or negative and provide an explanation.
+                {user && <p className="mt-2">For more comprehensive analysis, click "Choose a Social Platform" above to analyze multiple comments from Twitter/X or YouTube.</p>}
+              </AlertDescription>
+            </Alert>
+          )}
           
           {result && (
-            <Card className="dark:bg-navy-light light:bg-gray-light animate-fade-in">
-              <CardHeader>
-                <CardTitle className="text-white dark:text-white light:text-navy flex items-center">
-                  Result <span className="ml-2 text-2xl">{sentimentEmoji[result.sentiment]}</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center">
-                    <span className="text-lg font-bold mr-2">Sentiment:</span>
-                    <span className={`text-lg font-medium ${sentimentColor[result.sentiment]}`}>
+            <div className="space-y-6">
+              <Card className="bg-navy-dark dark:bg-navy-dark light:bg-white">
+                <CardHeader>
+                  <CardTitle className="text-white dark:text-white light:text-navy flex items-center">
+                    Analysis Result <span className="ml-2 text-2xl">{getSentimentEmoji(result.sentiment)}</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-bold text-gray-200 dark:text-gray-200 light:text-gray-700">Sentiment:</span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getSentimentColor(result.sentiment)}`}>
                       {result.sentiment.charAt(0).toUpperCase() + result.sentiment.slice(1)}
                     </span>
                   </div>
                   
-                  <div>
-                    <span className="text-lg font-bold">Explanation:</span>
-                    <p className="mt-1 text-gray dark:text-gray light:text-gray-dark">
+                  <div className="space-y-2">
+                    <span className="text-lg font-bold text-gray-200 dark:text-gray-200 light:text-gray-700">Confidence:</span>
+                    <div className="h-4 bg-navy-light dark:bg-navy-light light:bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full ${result.sentiment === 'positive' ? 'bg-sentiment-positive' : result.sentiment === 'negative' ? 'bg-sentiment-negative' : 'bg-sentiment-neutral'}`}
+                        style={{ width: `${result.score * 100}%` }}
+                      ></div>
+                    </div>
+                    <div className="text-right text-sm text-gray-400 dark:text-gray-400 light:text-gray-500">
+                      {Math.round(result.score * 100)}%
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2 pt-4">
+                    <h3 className="text-blue dark:text-blue light:text-blue text-lg font-bold">Why This Message Got This Reaction</h3>
+                    <p className="text-gray-200 dark:text-gray-200 light:text-gray-700">
                       {result.explanation}
                     </p>
                   </div>
+                </CardContent>
+              </Card>
+              
+              {user && (
+                <div className="text-center">
+                  <Button 
+                    className="bg-blue hover:bg-blue-light text-white font-medium rounded-full px-6 py-3 transition-transform hover:scale-105"
+                    onClick={() => setSocialModalOpen(true)}
+                  >
+                    Try with Social Media Content <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
+              )}
+            </div>
           )}
         </div>
       </div>
+
+      <SocialMediaModal 
+        isOpen={socialModalOpen}
+        onClose={() => setSocialModalOpen(false)}
+      />
     </div>
   );
 };

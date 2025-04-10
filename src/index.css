@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 @tailwind base;
@@ -161,8 +162,19 @@
     @apply dark:bg-navy-dark dark:text-white;
     @apply light:bg-white light:text-navy;
   }
+
+  .modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50;
+    @apply dark:bg-black dark:bg-opacity-50;
+    @apply light:bg-black light:bg-opacity-30;
+  }
 }
 
 html {
   font-family: 'Roboto', sans-serif;
+}
+
+/* Theme Transition */
+html, body, * {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }

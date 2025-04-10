@@ -132,11 +132,11 @@ const Analyze = () => {
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold text-white dark:text-white light:text-navy text-center mb-4">
-            Analyze Social Media <span className="text-blue">Comments</span>
+            Text <span className="text-blue">Analysis</span>
           </h1>
           
           <p className="text-gray-300 dark:text-gray-300 light:text-gray-dark text-lg text-center mb-12">
-            Paste your social media comments below to get instant sentiment analysis
+            Paste your text or comments below to get instant sentiment analysis
           </p>
           
           <Card className="bg-navy-light dark:bg-navy-light light:bg-gray-light border-gray-700 mb-8">
@@ -157,7 +157,7 @@ const Analyze = () => {
                 <div className="flex gap-2">
                   <Button
                     variant="outline" 
-                    className="btn-secondary"
+                    className="btn-secondary transition-transform hover:scale-105"
                     onClick={handleCopy}
                     disabled={!comments.trim()}
                   >
@@ -166,7 +166,7 @@ const Analyze = () => {
                   </Button>
                   <Button
                     variant="outline" 
-                    className="btn-secondary"
+                    className="btn-secondary transition-transform hover:scale-105"
                     onClick={handlePaste}
                   >
                     <Clipboard className="mr-2 h-4 w-4" />
@@ -178,14 +178,14 @@ const Analyze = () => {
             <CardFooter className="flex justify-between">
               <Button
                 variant="outline" 
-                className="btn-secondary"
+                className="btn-secondary transition-transform hover:scale-105"
                 onClick={handleUpload}
               >
                 <FileUp className="mr-2 h-4 w-4" />
                 Upload CSV
               </Button>
               <Button 
-                className="btn-primary"
+                className="btn-primary transition-transform hover:scale-105"
                 onClick={handleAnalyze}
                 disabled={isAnalyzing || !comments.trim()}
               >
@@ -292,7 +292,7 @@ const Analyze = () => {
               </div>
               
               <div className="mt-8 text-center">
-                <Button variant="outline" className="btn-secondary">
+                <Button variant="outline" className="btn-secondary transition-transform hover:scale-105">
                   Download Report
                 </Button>
               </div>

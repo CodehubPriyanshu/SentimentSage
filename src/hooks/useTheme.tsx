@@ -17,7 +17,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [theme, setTheme] = useState<Theme>(() => {
     // Check if theme preference is stored in localStorage
     const savedTheme = localStorage.getItem('sentimentsage-theme') as Theme | null;
-    return savedTheme || 'dark';
+    
+    // If no theme is stored, check system preference
+    if (!savedTheme) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return prefersDark ? 'dark' : 'light';
+    }
+    
+    return savedTheme;
   });
 
   useEffect(() => {

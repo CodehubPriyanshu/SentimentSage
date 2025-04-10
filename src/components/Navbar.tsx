@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { 
   DropdownMenu,
@@ -12,17 +12,23 @@ import { Menu, X, User, ChevronDown, Sun, Moon, LogOut, Settings } from 'lucide-
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "@/components/ui/use-toast";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   
   const handleSignOut = async () => {
     await signOut();
+    toast({
+      title: "Signed out successfully",
+      description: "You have been signed out of your account"
+    });
     navigate('/login');
   };
   
@@ -39,6 +45,11 @@ const Navbar = () => {
     
     return user?.email?.substring(0, 2).toUpperCase() || 'U';
   };
+
+  // Check if the link is active
+  const isActive = (path: string) => {
+    return location.pathname === path ? "text-blue" : "";
+  };
   
   return (
     <nav className="bg-navy-dark py-4 px-6 shadow-md dark:bg-navy-dark light:bg-white">
@@ -53,10 +64,22 @@ const Navbar = () => {
         
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-1">
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/how-to-use" className="nav-link">How to Use</Link>
-          <Link to="/post-comment-analysis" className="nav-link">Post Comment Analysis</Link>
-          {user && <Link to="/analyze" className="nav-link">Analyze Profile</Link>}
+          <Link to="/" className={`nav-link ${isActive("/")}`}>Home</Link>
+          <Link to="/how-to-use" className={`nav-link ${isActive("/how-to-use")}`}>How to Use</Link>
+          {user ? (
+            <>
+              <Link to="/post-comment-analysis" className={`nav-link ${isActive("/post-comment-analysis")}`}>
+                Select Social Media to Analyze
+              </Link>
+              <Link to="/analyze" className={`nav-link ${isActive("/analyze")}`}>
+                Text Analysis
+              </Link>
+            </>
+          ) : (
+            <Link to="/post-comment-analysis" className={`nav-link ${isActive("/post-comment-analysis")}`}>
+              Post Comment Analysis
+            </Link>
+          )}
         </div>
         
         {/* User Menu */}
@@ -67,7 +90,7 @@ const Navbar = () => {
             size="icon"
             onClick={toggleTheme}
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-            className="text-white dark:text-white light:text-navy"
+            className="text-white dark:text-white light:text-navy transition-colors"
           >
             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
           </Button>
@@ -140,10 +163,23 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden fixed inset-0 top-16 bg-navy-dark dark:bg-navy-dark light:bg-white z-50 px-6 pt-6 animate-fade-in">
           <div className="flex flex-col space-y-4">
-            <Link to="/" className="nav-link text-lg" onClick={toggleMenu}>Home</Link>
-            <Link to="/how-to-use" className="nav-link text-lg" onClick={toggleMenu}>How to Use</Link>
-            <Link to="/post-comment-analysis" className="nav-link text-lg" onClick={toggleMenu}>Post Comment Analysis</Link>
-            {user && <Link to="/analyze" className="nav-link text-lg" onClick={toggleMenu}>Analyze Profile</Link>}
+            <Link to="/" className={`nav-link text-lg ${isActive("/")}`} onClick={toggleMenu}>Home</Link>
+            <Link to="/how-to-use" className={`nav-link text-lg ${isActive("/how-to-use")}`} onClick={toggleMenu}>How to Use</Link>
+            
+            {user ? (
+              <>
+                <Link to="/post-comment-analysis" className={`nav-link text-lg ${isActive("/post-comment-analysis")}`} onClick={toggleMenu}>
+                  Select Social Media to Analyze
+                </Link>
+                <Link to="/analyze" className={`nav-link text-lg ${isActive("/analyze")}`} onClick={toggleMenu}>
+                  Text Analysis
+                </Link>
+              </>
+            ) : (
+              <Link to="/post-comment-analysis" className={`nav-link text-lg ${isActive("/post-comment-analysis")}`} onClick={toggleMenu}>
+                Post Comment Analysis
+              </Link>
+            )}
             
             <div className="border-t border-gray-700 dark:border-gray-700 light:border-gray-300 my-4 pt-4">
               {!user ? (

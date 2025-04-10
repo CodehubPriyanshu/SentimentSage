@@ -16,6 +16,8 @@ import Profile from "@/pages/Profile";
 import Features from "@/pages/Features";
 import NotFound from "@/pages/NotFound";
 import PostCommentAnalysis from "@/pages/PostCommentAnalysis";
+import TwitterAnalysis from "@/pages/TwitterAnalysis";
+import YoutubeAnalysis from "@/pages/YoutubeAnalysis";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -41,6 +43,16 @@ const App = () => (
                   <Route path="/features" element={<Features />} />
                   <Route path="/post-comment-analysis" element={<PostCommentAnalysis />} />
                   <Route path="/how-to-use" element={<HowToUse />} />
+                  <Route path="/twitter-analysis" element={
+                    <ProtectedRoute>
+                      <TwitterAnalysis />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/youtube-analysis" element={
+                    <ProtectedRoute>
+                      <YoutubeAnalysis />
+                    </ProtectedRoute>
+                  } />
                   <Route path="/analyze" element={
                     <ProtectedRoute>
                       <Analyze />

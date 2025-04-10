@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, MessageSquare, TrendingUp, ChevronRight, Lightbulb, BarChart2, RefreshCw } from 'lucide-react';
 import ContentModal from '@/components/ContentModal';
+import SocialMediaModal from '@/components/SocialMediaModal';
 import { useAuth } from '@/hooks/useAuth';
 
 interface SentimentBarProps {
@@ -69,6 +70,7 @@ const StepCard = ({ icon: Icon, title, description }: { icon: React.ElementType,
 const Home = () => {
   const { user } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
+  const [socialModalOpen, setSocialModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<{title: string, description: string, content: React.ReactNode}>({
     title: '', 
     description: '', 
@@ -155,17 +157,27 @@ const Home = () => {
                 </Link>
               ) : (
                 <Link to="/analyze">
-                  <Button className="bg-blue hover:bg-blue-light text-white font-medium rounded-full text-lg px-6 py-3 transition-transform hover:scale-105">
-                    Analyze Profile <ChevronRight className="ml-2 h-5 w-5" />
+                  <Button className="bg-navy-dark hover:bg-navy-light text-white font-medium rounded-full text-lg px-6 py-3 transition-transform hover:scale-105 dark:bg-navy-dark dark:hover:bg-navy-light light:bg-white light:hover:bg-gray-100 light:text-navy">
+                    Text Analysis <ChevronRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
               )}
               
-              <Link to="/post-comment-analysis">
-                <Button variant="outline" className="rounded-full text-lg px-6 py-3 dark:text-white light:text-navy dark:border-white light:border-navy transition-transform hover:scale-105">
-                  Post Comment Analysis
+              {user ? (
+                <Button 
+                  variant="outline" 
+                  className="rounded-full text-lg px-6 py-3 dark:text-white light:text-navy dark:border-white light:border-navy transition-transform hover:scale-105 bg-blue text-white border-blue hover:bg-blue-light"
+                  onClick={() => setSocialModalOpen(true)}
+                >
+                  Select Social Media to Analyze
                 </Button>
-              </Link>
+              ) : (
+                <Link to="/post-comment-analysis">
+                  <Button variant="outline" className="rounded-full text-lg px-6 py-3 dark:text-white light:text-navy dark:border-white light:border-navy transition-transform hover:scale-105">
+                    Post Comment Analysis
+                  </Button>
+                </Link>
+              )}
             </div>
             
             <div className="mt-16">
@@ -270,6 +282,11 @@ const Home = () => {
       >
         {modalContent.content}
       </ContentModal>
+
+      <SocialMediaModal
+        isOpen={socialModalOpen}
+        onClose={() => setSocialModalOpen(false)}
+      />
     </div>
   );
 };
