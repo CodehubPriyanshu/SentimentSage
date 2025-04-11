@@ -12,6 +12,7 @@ import Signup from "@/pages/Signup";
 import About from "@/pages/About";
 import HowToUse from "@/pages/HowToUse";
 import Analyze from "@/pages/Analyze";
+import Analysis from "@/pages/Analysis";
 import Profile from "@/pages/Profile";
 import Features from "@/pages/Features";
 import NotFound from "@/pages/NotFound";
@@ -58,6 +59,7 @@ const App = () => (
                       <Analyze />
                     </ProtectedRoute>
                   } />
+                  <Route path="/analysis" element={<Analysis />} />
                   <Route path="/profile" element={
                     <ProtectedRoute>
                       <Profile />

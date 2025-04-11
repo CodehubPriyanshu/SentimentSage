@@ -156,7 +156,7 @@ const Home = () => {
                   </Button>
                 </Link>
               ) : (
-                <Link to="/analyze">
+                <Link to="/analysis">
                   <Button className="bg-navy-dark hover:bg-navy-light text-white font-medium rounded-full text-lg px-6 py-3 transition-transform hover:scale-105 dark:bg-navy-dark dark:hover:bg-navy-light light:bg-white light:hover:bg-gray-100 light:text-navy">
                     Text Analysis <ChevronRight className="ml-2 h-5 w-5" />
                   </Button>
@@ -169,7 +169,7 @@ const Home = () => {
                   className="rounded-full text-lg px-6 py-3 dark:text-white light:text-navy dark:border-white light:border-navy transition-transform hover:scale-105 bg-blue text-white border-blue hover:bg-blue-light"
                   onClick={() => setSocialModalOpen(true)}
                 >
-                  Select Social Media to Analyze
+                  Social Media
                 </Button>
               ) : (
                 <Link to="/analyze">

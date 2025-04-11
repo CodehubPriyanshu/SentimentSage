@@ -66,20 +66,8 @@ const Navbar = () => {
         <div className="hidden md:flex items-center space-x-4 flex-grow justify-center">
           <Link to="/" className={`nav-link ${isActive("/")}`}>Home</Link>
           <Link to="/how-to-use" className={`nav-link ${isActive("/how-to-use")}`}>How to Use</Link>
-          {user ? (
-            <>
-              <Link to="/post-comment-analysis" className={`nav-link ${isActive("/post-comment-analysis")}`}>
-                Social Media
-              </Link>
-              <Link to="/analyze" className={`nav-link ${isActive("/analyze")}`}>
-                Text Analysis
-              </Link>
-            </>
-          ) : (
-            <Link to="/analyze" className={`nav-link ${isActive("/analyze")}`}>
-              Text Analysis
-            </Link>
-          )}
+          <Link to="/analysis" className={`nav-link ${isActive("/analysis")}`}>Analysis</Link>
+          <Link to="/features" className={`nav-link ${isActive("/features")}`}>Features</Link>
           <Link to="/about" className={`nav-link ${isActive("/about")}`}>About</Link>
         </div>
         
@@ -160,22 +148,9 @@ const Navbar = () => {
           <div className="flex flex-col space-y-4">
             <Link to="/" className={`nav-link text-lg ${isActive("/")}`} onClick={toggleMenu}>Home</Link>
             <Link to="/how-to-use" className={`nav-link text-lg ${isActive("/how-to-use")}`} onClick={toggleMenu}>How to Use</Link>
+            <Link to="/analysis" className={`nav-link text-lg ${isActive("/analysis")}`} onClick={toggleMenu}>Analysis</Link>
+            <Link to="/features" className={`nav-link text-lg ${isActive("/features")}`} onClick={toggleMenu}>Features</Link>
             <Link to="/about" className={`nav-link text-lg ${isActive("/about")}`} onClick={toggleMenu}>About</Link>
-            
-            {user ? (
-              <>
-                <Link to="/post-comment-analysis" className={`nav-link text-lg ${isActive("/post-comment-analysis")}`} onClick={toggleMenu}>
-                  Social Media
-                </Link>
-                <Link to="/analyze" className={`nav-link text-lg ${isActive("/analyze")}`} onClick={toggleMenu}>
-                  Text Analysis
-                </Link>
-              </>
-            ) : (
-              <Link to="/analyze" className={`nav-link text-lg ${isActive("/analyze")}`} onClick={toggleMenu}>
-                Text Analysis
-              </Link>
-            )}
             
             <div className="border-t border-gray-700 dark:border-gray-700 light:border-gray-300 my-4 pt-4">
               {!user ? (
