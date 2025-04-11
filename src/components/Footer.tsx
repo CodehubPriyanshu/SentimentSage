@@ -111,6 +111,33 @@ const Footer = () => {
     setModalOpen(true);
   };
 
+  const openContactModal = () => {
+    setModalContent({
+      title: 'Contact Us',
+      content: (
+        <div className="space-y-6 text-left">
+          <p className="text-gray-300 dark:text-gray-300 light:text-gray-dark">
+            Have questions or feedback? Reach out to us using the following email addresses:
+          </p>
+          <div className="space-y-4">
+            <a href="mailto:sentimentsagemails@gmail.com" className="flex items-center text-gray-300 dark:text-gray-300 light:text-gray-dark hover:text-blue transition-colors">
+              <Mail className="h-5 w-5 mr-2 text-blue" />
+              sentimentsagemails@gmail.com
+            </a>
+            <a href="mailto:priyanshumails.bca2025@gmail.com" className="flex items-center text-gray-300 dark:text-gray-300 light:text-gray-dark hover:text-blue transition-colors">
+              <Mail className="h-5 w-5 mr-2 text-blue" />
+              priyanshumails.bca2025@gmail.com
+            </a>
+          </div>
+          <p className="text-gray-300 dark:text-gray-300 light:text-gray-dark">
+            We typically respond within 24-48 hours during business days.
+          </p>
+        </div>
+      )
+    });
+    setModalOpen(true);
+  };
+
   return (
     <footer className="bg-navy-dark text-gray py-12 dark:bg-navy-dark light:bg-white light:text-gray-dark">
       <div className="container mx-auto px-4">
@@ -162,16 +189,12 @@ const Footer = () => {
                 <Link to="/about" className="hover:text-blue transition-colors">About Us</Link>
               </li>
               <li>
-                <a href="mailto:sentimentsagemails@gmail.com" className="hover:text-blue transition-colors flex items-center">
-                  <Mail className="h-4 w-4 mr-2" />
-                  sentimentsagemails@gmail.com
-                </a>
-              </li>
-              <li>
-                <a href="mailto:priyanshumails.bca2025@gmail.com" className="hover:text-blue transition-colors flex items-center">
-                  <Mail className="h-4 w-4 mr-2" />
-                  priyanshumails.bca2025@gmail.com
-                </a>
+                <button 
+                  onClick={openContactModal} 
+                  className="text-left hover:text-blue transition-colors hover:scale-105"
+                >
+                  Contact
+                </button>
               </li>
             </ul>
           </div>

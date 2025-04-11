@@ -4,10 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, FileUp, Send, Copy, Clipboard } from 'lucide-react';
+import { AlertCircle, FileUp, Send, Copy, Clipboard, Save } from 'lucide-react';
 import { toast } from "@/components/ui/use-toast";
 import { analyzeSentiment } from "@/utils/sentimentAnalysis";
 import SocialMediaModal from '@/components/SocialMediaModal';
+import { useAuth } from '@/hooks/useAuth';
+
+interface SavedAnalysis {
+  id: string;
+  date: string;
+  comments: string;
+  sentiment: 'positive' | 'negative' | 'neutral' | null;
+  explanation: string | null;
+}
 
 const Analysis = () => {
   const [comments, setComments] = useState('');
@@ -22,6 +31,7 @@ const Analysis = () => {
     explanation: string;
   }>(null);
   const [socialModalOpen, setSocialModalOpen] = useState(false);
+  const { user } = useAuth();
   
   useEffect(() => {
     if (comments.trim()) {
@@ -117,6 +127,51 @@ const Analysis = () => {
     }
   };
 
+  const saveAnalysis = () => {
+    if (!sentimentResult || !comments.trim()) {
+      toast({
+        title: "Nothing to Save",
+        description: "Please analyze some content first",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Get existing saved analyses
+      const savedAnalysesJson = localStorage.getItem('sentimentSage-savedAnalyses');
+      const savedAnalyses: SavedAnalysis[] = savedAnalysesJson 
+        ? JSON.parse(savedAnalysesJson) 
+        : [];
+      
+      // Create new analysis object
+      const newAnalysis: SavedAnalysis = {
+        id: Date.now().toString(),
+        date: new Date().toISOString(),
+        comments: comments,
+        sentiment: sentimentResult.sentiment,
+        explanation: sentimentResult.explanation
+      };
+      
+      // Add to beginning of array (most recent first)
+      savedAnalyses.unshift(newAnalysis);
+      
+      // Save back to localStorage
+      localStorage.setItem('sentimentSage-savedAnalyses', JSON.stringify(savedAnalyses));
+      
+      toast({
+        title: "Analysis Saved",
+        description: "Your analysis has been saved to your profile",
+      });
+    } catch (error) {
+      toast({
+        title: "Save Failed",
+        description: "Could not save your analysis. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const sentimentEmoji = {
     positive: '👍',
     negative: '👎',
@@ -197,20 +252,32 @@ const Analysis = () => {
                 <FileUp className="mr-2 h-4 w-4" />
                 Upload CSV
               </Button>
-              <Button 
-                className="btn-primary transition-transform hover:scale-105"
-                onClick={handleAnalyze}
-                disabled={isAnalyzing || !comments.trim()}
-              >
-                {isAnalyzing ? (
-                  <>Analyzing...</>
-                ) : (
-                  <>
-                    <Send className="mr-2 h-4 w-4" />
-                    Analyze Comments
-                  </>
+              <div className="flex gap-2">
+                {sentimentResult && comments.trim() && (
+                  <Button 
+                    variant="outline"
+                    className="btn-secondary transition-transform hover:scale-105"
+                    onClick={saveAnalysis}
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Analysis
+                  </Button>
                 )}
-              </Button>
+                <Button 
+                  className="btn-primary transition-transform hover:scale-105"
+                  onClick={handleAnalyze}
+                  disabled={isAnalyzing || !comments.trim()}
+                >
+                  {isAnalyzing ? (
+                    <>Analyzing...</>
+                  ) : (
+                    <>
+                      <Send className="mr-2 h-4 w-4" />
+                      Analyze Comments
+                    </>
+                  )}
+                </Button>
+              </div>
             </CardFooter>
           </Card>
 

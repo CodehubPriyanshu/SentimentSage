@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 @tailwind base;
@@ -172,6 +173,17 @@
     @apply dark:bg-black dark:bg-opacity-50;
     @apply light:bg-black light:bg-opacity-30;
   }
+  
+  /* Avatar with hover glow effect */
+  .avatar-glow {
+    @apply transition-all duration-300;
+  }
+  
+  .avatar-glow:hover {
+    @apply shadow-[0_0_10px_#1366C7] bg-navy-light;
+    @apply dark:shadow-[0_0_10px_#1366C7] dark:bg-navy-light;
+    @apply light:shadow-[0_0_10px_#1366C7] light:bg-gray-200;
+  }
 }
 
 html {
@@ -200,4 +212,10 @@ html {
   opacity: 0;
   transform: translateY(-10px);
   transition: opacity 300ms, transform 300ms;
+}
+
+/* Improve collapsible section animation */
+.collapsible-section {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
 }
