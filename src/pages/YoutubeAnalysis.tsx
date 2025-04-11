@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Send, Youtube } from 'lucide-react';
+import { AlertCircle, Send, Youtube, Bot } from 'lucide-react';
 import { toast } from "@/components/ui/use-toast";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
@@ -16,6 +16,7 @@ interface AnalysisResult {
     negative: number;
   };
   keywords: string[];
+  aiInsights?: string;
 }
 
 const YoutubeAnalysis = () => {
@@ -37,7 +38,7 @@ const YoutubeAnalysis = () => {
     
     // Mock fetching YouTube data - replace with actual API call
     setTimeout(() => {
-      // Generate mock analysis result
+      // Generate mock analysis result with AI insights
       const mockResult: AnalysisResult = {
         summary: "This video has received mostly positive feedback. Viewers appreciate the clear explanations and practical examples provided. Some negative comments focus on the audio quality in certain segments. The overall sentiment is positive with engagement metrics showing above-average viewer retention.",
         sentiment: {
@@ -45,7 +46,8 @@ const YoutubeAnalysis = () => {
           neutral: 22,
           negative: 10
         },
-        keywords: ["helpful", "informative", "clear", "audio issues", "useful examples", "well-explained"]
+        keywords: ["helpful", "informative", "clear", "audio issues", "useful examples", "well-explained"],
+        aiInsights: "Based on the transcript and comments analysis, this video resonates well with the audience due to its clear explanations and practical examples. The content appears to be educational in nature, with viewers particularly appreciating the step-by-step approach. There's a small segment of viewers mentioning audio quality issues around the middle section of the video, which might benefit from enhancement in future content. The high engagement rate suggests that similar topics would be well-received by your audience."
       };
       
       setResult(mockResult);
@@ -192,6 +194,21 @@ const YoutubeAnalysis = () => {
                   </CardContent>
                 </Card>
               </div>
+              
+              {/* AI Insights Section */}
+              <Card className="bg-navy-dark dark:bg-navy-dark light:bg-white">
+                <CardHeader>
+                  <CardTitle className="text-white dark:text-white light:text-navy flex items-center">
+                    <Bot className="h-5 w-5 mr-2 text-blue" />
+                    AI Insights
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-200 dark:text-gray-200 light:text-gray-700">
+                    {result.aiInsights}
+                  </p>
+                </CardContent>
+              </Card>
               
               <div className="mt-8 text-center">
                 <Button variant="outline" className="btn-secondary">

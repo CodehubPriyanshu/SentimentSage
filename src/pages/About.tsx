@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -7,11 +6,10 @@ import ContentModal from '@/components/ContentModal';
 
 interface TeamMemberProps {
   name: string;
-  role: string;
   image?: string; 
 }
 
-const TeamMember: React.FC<TeamMemberProps> = ({ name, role, image }) => {
+const TeamMember: React.FC<TeamMemberProps> = ({ name, image }) => {
   return (
     <div className="card p-6 flex flex-col items-center text-center">
       <div className="w-20 h-20 bg-blue/20 rounded-full mb-4 flex items-center justify-center">
@@ -21,8 +19,7 @@ const TeamMember: React.FC<TeamMemberProps> = ({ name, role, image }) => {
           <Users className="h-10 w-10 text-blue" />
         )}
       </div>
-      <h3 className="text-lg font-bold text-white">{name}</h3>
-      <p className="text-gray-400">{role}</p>
+      <h3 className="text-lg font-bold text-white dark:text-white light:text-navy">{name}</h3>
     </div>
   );
 };
@@ -84,35 +81,31 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             <div className="card p-6">
               <h4 className="text-lg font-bold text-white">Priyanshu Kumar</h4>
-              <p className="text-gray-300">Lead Developer & AI Specialist</p>
               <p className="text-gray-400 mt-2">
                 Responsible for implementing the core sentiment analysis algorithms and backend architecture.
               </p>
             </div>
             <div className="card p-6">
               <h4 className="text-lg font-bold text-white">Vibhu Chaturvedi</h4>
-              <p className="text-gray-300">Frontend Developer & UX Designer</p>
               <p className="text-gray-400 mt-2">
                 Designed and implemented the user interface and visualization components.
               </p>
             </div>
             <div className="card p-6">
               <h4 className="text-lg font-bold text-white">Vikas Rawat</h4>
-              <p className="text-gray-300">Data Scientist & NLP Engineer</p>
               <p className="text-gray-400 mt-2">
                 Specialized in training and fine-tuning the NLP models for sentiment analysis.
               </p>
             </div>
             <div className="card p-6">
               <h4 className="text-lg font-bold text-white">Ankit Kumar</h4>
-              <p className="text-gray-300">Full-Stack Developer</p>
               <p className="text-gray-400 mt-2">
                 Focused on system integration, authentication, and deployment infrastructure.
               </p>
             </div>
             <div className="card p-6">
               <h4 className="text-lg font-bold text-white">Manish Jain</h4>
-              <p className="text-gray-300">Project Guide & Mentor</p>
+              <p className="text-gray-300">Guide</p>
               <p className="text-gray-400 mt-2">
                 Provided expert guidance and mentorship throughout the development process.
               </p>
@@ -125,7 +118,7 @@ const About = () => {
   };
 
   return (
-    <div className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy dark:bg-navy light:bg-white">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold text-white text-center mb-6">
@@ -168,11 +161,11 @@ const About = () => {
             <div>
               <h2 className="text-2xl font-bold text-white mb-6 text-center" id="team">Our Team</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                <TeamMember name="Priyanshu Kumar" role="Developer" />
-                <TeamMember name="Vibhu Chaturvedi" role="Developer" />
-                <TeamMember name="Vikas Rawat" role="Developer" />
-                <TeamMember name="Ankit Kumar" role="Developer" />
-                <TeamMember name="Manish Jain" role="Guide" />
+                <TeamMember name="Priyanshu Kumar" />
+                <TeamMember name="Vibhu Chaturvedi" />
+                <TeamMember name="Vikas Rawat" />
+                <TeamMember name="Ankit Kumar" />
+                <TeamMember name="Manish Jain" />
               </div>
               <div className="text-center mt-6">
                 <Button variant="outline" onClick={openTeamModal}>

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Send, Twitter } from 'lucide-react';
+import { AlertCircle, Send, Twitter, Bot } from 'lucide-react';
 import { toast } from "@/components/ui/use-toast";
 
 interface Tweet {
@@ -19,6 +19,7 @@ const TwitterAnalysis = () => {
   const [twitterHandle, setTwitterHandle] = useState('');
   const [isFetching, setIsFetching] = useState(false);
   const [tweets, setTweets] = useState<Tweet[]>([]);
+  const [aiInsights, setAiInsights] = useState<string | null>(null);
 
   const handleFetch = () => {
     if (!twitterHandle.trim()) {
@@ -74,6 +75,11 @@ const TwitterAnalysis = () => {
       ];
       
       setTweets(mockTweets);
+      
+      // Generate mock AI insights
+      const mockInsights = "Based on the tweet analysis for @" + twitterHandle + ", there's a noticeable positive trend in the user's recent activity. The account frequently discusses technology updates and customer service experiences, with a positive sentiment dominating at 40% of all tweets. Topics that receive positive engagement include product features and support interactions. There are some neutral discussions around interface changes, suggesting an area where users might benefit from additional guidance or improvements. The relatively low negative sentiment (20%) primarily concerns functionality issues post-updates, which could be addressed with more comprehensive update documentation or transition support.";
+      
+      setAiInsights(mockInsights);
       setIsFetching(false);
       
       toast({
@@ -174,6 +180,23 @@ const TwitterAnalysis = () => {
                   </CardContent>
                 </Card>
               ))}
+              
+              {/* AI Insights Section */}
+              {aiInsights && (
+                <Card className="bg-navy-dark dark:bg-navy-dark light:bg-white">
+                  <CardHeader>
+                    <CardTitle className="text-white dark:text-white light:text-navy flex items-center">
+                      <Bot className="h-5 w-5 mr-2 text-blue" />
+                      AI Insights
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-200 dark:text-gray-200 light:text-gray-700">
+                      {aiInsights}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
               
               <div className="card p-6 mt-8">
                 <h3 className="text-xl font-bold text-white dark:text-white light:text-navy mb-4">Sentiment Summary</h3>
