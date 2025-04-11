@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { toast } from '@/components/ui/use-toast';
 
 type Theme = 'dark' | 'light';
 
@@ -58,10 +59,30 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [theme]);
 
   const toggleTheme = () => {
-    setThemeState(current => current === 'dark' ? 'light' : 'dark');
+    setThemeState(current => {
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      
+      // Show toast notification
+      toast({
+        title: `Theme changed to ${newTheme === 'dark' ? 'Dark' : 'Light'}`,
+        description: `Your preference has been saved.`,
+        duration: 3000,
+      });
+      
+      return newTheme;
+    });
   };
 
   const setTheme = (newTheme: Theme) => {
+    if (newTheme !== theme) {
+      // Show toast notification
+      toast({
+        title: `Theme changed to ${newTheme === 'dark' ? 'Dark' : 'Light'}`,
+        description: `Your preference has been saved.`,
+        duration: 3000,
+      });
+    }
+    
     setThemeState(newTheme);
   };
 

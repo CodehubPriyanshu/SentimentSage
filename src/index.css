@@ -157,7 +157,7 @@
   }
   
   .card {
-    @apply bg-navy-light rounded-lg p-6 shadow-lg;
+    @apply bg-navy-light rounded-lg p-6 shadow-lg relative;
     @apply dark:bg-navy-light;
     @apply light:bg-gray-light light:border light:border-gray-200;
   }
@@ -218,4 +218,33 @@ html {
 .collapsible-section {
   overflow: hidden;
   transition: max-height 0.3s ease;
+}
+
+/* Custom hover effects for buttons */
+button:hover, .btn-primary:hover, .btn-secondary:hover {
+  @apply bg-blue text-white transition-all duration-300;
+}
+
+/* Text colors for light theme */
+.light h1, .light h2, .light h3 {
+  @apply text-black;
+}
+
+.light .feature-content {
+  @apply text-gray-800;
+}
+
+/* Theme notification */
+.theme-notification {
+  @apply fixed top-4 right-4 px-4 py-2 rounded-md z-50;
+  @apply dark:bg-navy-light dark:text-white;
+  @apply light:bg-gray-light light:text-navy;
+  animation: fadeInOut 3s ease forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-20px); }
 }

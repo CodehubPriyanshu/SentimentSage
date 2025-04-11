@@ -5,6 +5,7 @@ import SavedAnalyses from "@/components/SavedAnalyses";
 import ProfileSettings from "@/components/ProfileSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
+import { toast } from "@/components/ui/use-toast";
 
 const Profile = () => {
   const { user } = useAuth();
@@ -18,24 +19,29 @@ const Profile = () => {
       .toUpperCase();
   };
 
+  // Extract user's display name or email for display
+  const displayName = user?.user_metadata?.name || user?.email || 'User Profile';
+  const userEmail = user?.email || 'user@example.com';
+  const userAvatar = user?.user_metadata?.avatar_url || '';
+
   return (
     <div className="min-h-screen bg-navy dark:bg-navy light:bg-white">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-6">
             <Avatar className="h-20 w-20 avatar-glow">
-              <AvatarImage src={user?.avatarUrl || ''} />
+              <AvatarImage src={userAvatar} />
               <AvatarFallback className="bg-blue text-white text-xl">
-                {user?.name ? getInitials(user.name) : 'U'}
+                {displayName !== 'User Profile' ? getInitials(displayName) : 'U'}
               </AvatarFallback>
             </Avatar>
             
             <div>
               <h1 className="text-3xl font-bold text-white dark:text-white light:text-navy">
-                {user?.name || 'User Profile'}
+                {displayName}
               </h1>
               <p className="text-gray-400 dark:text-gray-400 light:text-gray-dark">
-                {user?.email || 'user@example.com'}
+                {userEmail}
               </p>
             </div>
           </div>

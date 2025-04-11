@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -9,12 +8,12 @@ import {
   Clock, 
   Lightbulb, 
   FileText,
-  Instagram,
   Twitter,
   Youtube,
   ArrowRight
 } from 'lucide-react';
 import ContentModal from '@/components/ContentModal';
+import { useTheme } from "@/hooks/useTheme";
 
 interface FeatureCardProps {
   icon: React.ElementType;
@@ -26,14 +25,15 @@ interface FeatureCardProps {
 const FeatureCard: React.FC<FeatureCardProps> = ({ icon: Icon, title, description, onClick }) => {
   return (
     <div 
-      className="card p-6 hover:shadow-xl transition-all hover:scale-[1.02] cursor-pointer"
+      className="card p-6 hover:shadow-xl transition-all hover:scale-[1.02] cursor-pointer group"
       onClick={onClick}
     >
       <div className="rounded-full bg-blue/10 p-3 w-14 h-14 flex items-center justify-center mb-4">
         <Icon className="h-8 w-8 text-blue" />
       </div>
-      <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+      <h3 className="text-xl font-bold text-white dark:text-white light:text-navy mb-2">{title}</h3>
       <p className="text-gray-400">{description}</p>
+      <div className="absolute inset-0 rounded-lg transition-colors group-hover:bg-blue/5 group-hover:border-blue/30"></div>
     </div>
   );
 };
@@ -51,7 +51,7 @@ const PlatformCard: React.FC<PlatformCardProps> = ({ icon: Icon, name, descripti
         <Icon className="h-8 w-8 text-blue" />
       </div>
       <div>
-        <h3 className="text-xl font-bold text-white mb-2 text-center md:text-left">{name}</h3>
+        <h3 className="text-xl font-bold text-white dark:text-white light:text-navy mb-2 text-center md:text-left">{name}</h3>
         <p className="text-gray-400">{description}</p>
       </div>
     </div>
@@ -59,15 +59,16 @@ const PlatformCard: React.FC<PlatformCardProps> = ({ icon: Icon, name, descripti
 };
 
 const Features = () => {
+  const { isLightTheme } = useTheme();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<{
     title: string;
     description: string;
-    content: React.ReactNode; // Update the type to ReactNode
+    content: React.ReactNode;
   }>({
     title: '',
     description: '',
-    content: null // Initialize with null instead of an empty React element
+    content: null
   });
 
   const openFeatureModal = (title: string, content: React.ReactNode) => {
@@ -80,11 +81,11 @@ const Features = () => {
   };
 
   return (
-    <div className="min-h-screen bg-navy">
+    <div className="min-h-screen bg-navy dark:bg-navy light:bg-white">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold text-white text-center mb-6 animate-fade-in">
-            Powerful Comment Analysis Features
+          <h1 className="text-3xl md:text-4xl font-bold text-white dark:text-white light:text-navy text-center mb-6 animate-fade-in">
+            Powerful Comment <span className="text-blue">Analysis</span> Features
           </h1>
           
           <p className="text-gray-300 text-lg text-center mb-12 animate-fade-in">
@@ -291,13 +292,7 @@ const Features = () => {
             <div className="animate-fade-in">
               <h2 className="text-2xl font-bold text-white mb-6 text-center">Support for Multiple Social Media Platforms</h2>
               
-              <div className="space-y-6">
-                <PlatformCard 
-                  icon={Instagram} 
-                  name="Instagram"
-                  description="Analyze comments from Instagram posts and reels to understand audience sentiment on one of the most visual-focused platforms."
-                />
-                
+              <div className="space-y-6 grid md:grid-cols-2 gap-6">
                 <PlatformCard 
                   icon={Twitter} 
                   name="Twitter/X"
@@ -314,7 +309,7 @@ const Features = () => {
             
             <div className="text-center">
               <Link to="/signup">
-                <Button className="btn-primary">
+                <Button className="btn-primary hover:bg-blue">
                   Get Started With All Features <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -88,13 +89,13 @@ const About = () => {
             <div className="card p-6">
               <h4 className="text-lg font-bold text-white">Vibhu Chaturvedi</h4>
               <p className="text-gray-400 mt-2">
-                Designed and implemented the user interface and visualization components.
+                Specialized in training and fine-tuning the NLP models for sentiment analysis.
               </p>
             </div>
             <div className="card p-6">
               <h4 className="text-lg font-bold text-white">Vikas Rawat</h4>
               <p className="text-gray-400 mt-2">
-                Specialized in training and fine-tuning the NLP models for sentiment analysis.
+                Designed and implemented the user interface and visualization components.
               </p>
             </div>
             <div className="card p-6">
