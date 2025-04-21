@@ -1,73 +1,157 @@
-# Welcome to your Lovable project
+# Sage Sentiment Spark
 
-## Project info
+A comprehensive sentiment analysis application that processes various types of input data including plain text, CSV datasets, YouTube comments, and Twitter tweets. The application features high-performance analysis with real-time feedback and progressive loading of results.
 
-**URL**: https://lovable.dev/projects/63337371-f771-4735-9001-0ee1f005a5f9
+## Project Structure
 
-## How can I edit this code?
+The project is organized into two main directories:
 
-There are several ways of editing your application.
+- `frontend/`: Contains the React frontend application
+- `backend/`: Contains the Flask backend API
 
-**Use Lovable**
+## Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/63337371-f771-4735-9001-0ee1f005a5f9) and start prompting.
+- User authentication (signup, login, profile management)
+- Text sentiment analysis
+- CSV file upload and exploratory data analysis
+- High-performance YouTube comment analysis with real-time progress tracking
+- Optimized Twitter tweet analysis with parallel processing
+- Client-side caching for faster repeat analyses
+- Progressive loading of analysis results
+- User profile with history of all analyses
 
-Changes made via Lovable will be committed automatically to this repo.
+## Setup
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (v16+)
+- Python (v3.8+)
+- pip (Python package manager)
+- npm (Node package manager)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation
 
-Follow these steps:
+1. Clone the repository:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+   ```bash
+   git clone https://github.com/CodehubPriyanshu/sage-sentiment-spark.git
+   cd sage-sentiment-spark
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. Install dependencies:
 
-# Step 3: Install the necessary dependencies.
-npm i
+   ```bash
+   npm run install:all
+   ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+   This will install both frontend and backend dependencies.
 
-**Edit a file directly in GitHub**
+### Configuration
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Create a `.env` file in the `backend/` directory with the following variables:
 
-**Use GitHub Codespaces**
+   ```env
+   FLASK_DEBUG=True
+   SECRET_KEY=your-secret-key
+   JWT_SECRET_KEY=your-jwt-secret-key
+   YOUTUBE_API_KEY=your-youtube-api-key
+   OPENAI_API_KEY=your-openai-api-key
+   TWITTER_API_KEY=your-twitter-api-key
+   TWITTER_API_SECRET=your-twitter-api-secret
+   TWITTER_ACCESS_TOKEN=your-twitter-access-token
+   TWITTER_ACCESS_SECRET=your-twitter-access-secret
+   ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+   Note: For development, you can leave the API keys empty. The application will use mock data.
 
-## What technologies are used for this project?
+### Running the Application
+
+1. Start both frontend and backend:
+
+   ```bash
+   npm start
+   ```
+
+2. Or run them separately:
+
+   ```bash
+   npm run start:frontend
+   npm run start:backend
+   ```
+
+3. Access the application at:
+   - Frontend: `http://localhost:8080`
+   - Backend API: `http://localhost:5000`
+
+## Technologies Used
 
 This project is built with:
+
+### Frontend
 
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
+- React Router
+- Recharts for data visualization
 
-## How can I deploy this project?
+### Backend
 
-Simply open [Lovable](https://lovable.dev/projects/63337371-f771-4735-9001-0ee1f005a5f9) and click on Share -> Publish.
+- Flask
+- SQLite
+- Flask-JWT-Extended for authentication
+- Pandas for data analysis
+- Scikit-learn for machine learning
+- Tweepy for Twitter API integration
+- Google API Client for YouTube API integration
 
-## Can I connect a custom domain to my Lovable project?
+## Performance Optimizations
 
-Yes it is!
+### Backend Optimizations
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- **Parallel Processing**: Multi-threaded processing for sentiment analysis using ThreadPoolExecutor with dynamic worker allocation
+- **Caching Mechanism**: Caching for previously analyzed YouTube videos and Twitter handles
+- **Thread-Local Storage**: Efficient model loading with thread-local storage to avoid reloading
+- **Optimized Algorithms**: NumPy for faster sentiment calculations and defaultdict for efficient data structures
+- **Dynamic Batch Processing**: Adaptive batch sizes based on workload for optimal performance
+- **Robust Error Handling**: Graceful fallbacks and partial result returns when possible
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Frontend Optimizations
+
+- **Progressive Loading**: Real-time display of partial results while analysis continues
+- **Visual Progress Tracking**: Animated progress bars with percentage completion
+- **Client-Side Caching**: Instant loading from cache for repeat analyses
+- **Optimized State Management**: Efficient React state updates to prevent unnecessary re-renders
+- **Performance Metrics**: Timing information to track and display analysis speed
+
+### User Experience Improvements
+
+- **Immediate Feedback**: Show video/user information immediately while analysis continues
+- **Step-by-Step Progress**: Visual indicators for each completed analysis step
+- **Smooth Transitions**: Animated progress updates for a polished user experience
+- **Error Recovery**: Specific error messages and recovery options for different failure scenarios
+
+## API Endpoints
+
+### Authentication
+
+- `POST /api/auth/signup`: Register a new user
+- `POST /api/auth/login`: Log in a user
+- `POST /api/auth/logout`: Log out a user
+- `GET /api/auth/me`: Get current user information
+
+### Profile
+
+- `GET /api/profile`: Get user profile
+- `PUT /api/profile`: Update user profile
+- `POST /api/profile/photo`: Upload profile photo
+- `GET /api/profile/analyses`: Get all analyses for the current user
+
+### Analysis
+
+- `POST /api/analyze/text`: Analyze text sentiment
+- `POST /api/analyze/csv`: Analyze CSV data
+- `POST /api/analyze/twitter`: Analyze Twitter user tweets
+- `POST /api/analyze/youtube`: Analyze YouTube video comments
