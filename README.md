@@ -11,11 +11,17 @@ The project is organized into two main directories:
 
 ## Features
 
+  ![HomePage](https://github.com/user-attachments/assets/30768f3e-c41f-4f97-a53f-cafb02f2a44e)
 - User authentication (signup, login, profile management)
+  ![Screenshot 2025-03-30 093019](https://github.com/user-attachments/assets/2b068cd3-c95b-43f3-8e1c-97e62c070854)
 - Text sentiment analysis
+  ![DashboardPage](https://github.com/user-attachments/assets/89953998-b4b5-4987-bd5c-240fcb4a9e0a)
 - CSV file upload and exploratory data analysis
+  ![CSVFileResult](https://github.com/user-attachments/assets/4ed789a4-c170-40ce-9594-a5e5bfd0ce37)
 - High-performance YouTube comment analysis with real-time progress tracking
+  ![YoutubeResult](https://github.com/user-attachments/assets/dd16f84a-ef49-4ed5-92ff-18ea62da9443)
 - Optimized Twitter tweet analysis with parallel processing
+  ![TweetResult](https://github.com/user-attachments/assets/359058f1-c570-493e-bac8-f424e49c206f)
 - Client-side caching for faster repeat analyses
 - Progressive loading of analysis results
 - User profile with history of all analyses
