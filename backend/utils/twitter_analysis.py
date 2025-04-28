@@ -34,7 +34,9 @@ def get_sentiment_analyzer():
                 tokenizer="cardiffnlp/twitter-roberta-base-sentiment-latest"
             )
         except Exception as e:
-            print(f"Error loading sentiment model: {str(e)}")
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error loading sentiment model: {str(e)}", exc_info=True)
             # Fallback to a smaller model if the first one fails
             _sentiment_analyzer = pipeline(
                 "sentiment-analysis",
@@ -173,7 +175,9 @@ def analyze_tweet_sentiment_with_huggingface(text: str) -> Dict[str, Any]:
             'explanation': explanation
         }
     except Exception as e:
-        print(f"Error analyzing sentiment with Hugging Face: {str(e)}")
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error analyzing sentiment with Hugging Face: {str(e)}", exc_info=True)
         # Fall back to basic sentiment analysis
         return analyze_sentiment(text)
 
@@ -512,13 +516,16 @@ def get_user_tweets(username: str, api_key: str, api_secret: str,
         return tweets, user_info
 
     except Exception as e:
-        print(f"Error in get_user_tweets: {str(e)}")
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error in get_user_tweets: {str(e)}", exc_info=True)
         # Fall back to v1 API
         try:
             return get_user_tweets_v1(
                 username, api_key, api_secret, access_token, access_secret, count, include_rts
             )
         except Exception as e2:
+            logger.error(f"Error in fallback to v1 API: {str(e2)}", exc_info=True)
             return [], {'error': f'Error fetching tweets: {str(e2)}'}
 
 import threading

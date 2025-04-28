@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 interface LoadingIndicatorProps {
   size?: "small" | "medium" | "large";
@@ -8,7 +8,7 @@ interface LoadingIndicatorProps {
   showProgress?: boolean; // Whether to show the progress bar
   steps?: string[]; // Optional array of steps to display
   currentStep?: number; // Current step index
-  pulseEffect?: boolean; // Whether to use pulse effect on spinner
+  pulseEffect?: boolean; // Whether to use pulse effect on spinner (no longer used)
 }
 
 const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
@@ -19,23 +19,8 @@ const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
   showProgress = false,
   steps = [],
   currentStep = 0,
-  pulseEffect = true,
+  pulseEffect = true, // Kept for backward compatibility
 }) => {
-  // State for animated dots
-  const [dots, setDots] = useState("");
-
-  // Animate the dots
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDots((prev) => {
-        if (prev.length >= 3) return "";
-        return prev + ".";
-      });
-    }, 400);
-
-    return () => clearInterval(interval);
-  }, []);
-
   // Determine spinner size
   const spinnerSizeClasses = {
     small: "w-5 h-5",
@@ -61,11 +46,9 @@ const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
 
   const spinner = (
     <div className="flex flex-col items-center justify-center">
-      {/* Animated spinner with optional pulse effect */}
+      {/* Static loading indicator */}
       <div
-        className={`animate-spin rounded-full border-t-2 border-b-2 border-blue ${
-          spinnerSizeClasses[size]
-        } ${pulseEffect ? "animate-pulse" : ""}`}
+        className={`rounded-full border-2 border-blue ${spinnerSizeClasses[size]}`}
       ></div>
 
       {/* Main loading text */}
@@ -74,11 +57,10 @@ const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
           className={`mt-2 text-gray-200 dark:text-gray-200 light:text-gray-700 ${textSizeClasses[size]} font-medium`}
         >
           {text}
-          {dots}
         </p>
       )}
 
-      {/* Progress bar with improved styling */}
+      {/* Progress bar with static styling */}
       {showProgress && (
         <div className="w-full max-w-xs mt-4">
           <div className="relative pt-1">
@@ -92,7 +74,7 @@ const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
             <div className="overflow-hidden h-3 mb-4 text-xs flex rounded-full bg-navy-dark">
               <div
                 style={{ width: `${normalizedProgress}%` }}
-                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue transition-all duration-500 ease-in-out rounded-full"
+                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue rounded-full"
               ></div>
             </div>
           </div>
@@ -110,7 +92,7 @@ const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
                     index < currentStep
                       ? "bg-green-500"
                       : index === currentStep
-                      ? "bg-blue animate-pulse"
+                      ? "bg-blue"
                       : "bg-navy-dark"
                   }`}
                 >

@@ -401,9 +401,9 @@ const Features = () => {
               </div>
             </div>
 
-            <div className="text-center">
+            <div className="text-center mt-12">
               <Link to="/signup">
-                <Button className="btn-primary hover:bg-blue">
+                <Button className="btn-primary hover:bg-blue-light transition-transform hover:scale-105">
                   Get Started With All Features{" "}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>

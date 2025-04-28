@@ -5,13 +5,14 @@ import os
 import json
 import re
 import threading
-from typing import Dict, List, Any, Tuple, Optional
+from typing import Dict, List, Any, Tuple, Optional, Generator, Union
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from .sentiment_analysis import analyze_sentiment, analyze_multiple_texts
 from .huggingface_sentiment import analyze_sentiment_huggingface, analyze_multiple_texts_huggingface, analyze_youtube_engagement
 from .enhanced_sentiment import analyze_sentiment_enhanced, analyze_multiple_texts_enhanced
 from .language_detection import detect_language, translate_to_english, extract_emojis, interpret_emojis
+from .topic_extraction import extract_key_topics, extract_topics_from_comments, get_topic_names
 
 def extract_video_id(url: str) -> Optional[str]:
     """
@@ -190,6 +191,28 @@ def mock_youtube_analysis(video_url: str) -> Dict[str, Any]:
         'negative': 0.1
     }
 
+    # Create mock topics
+    mock_topics = [
+        {
+            'id': 0,
+            'words': ['content', 'quality', 'production', 'value', 'editing'],
+            'weights': [0.3, 0.25, 0.2, 0.15, 0.1]
+        },
+        {
+            'id': 1,
+            'words': ['information', 'helpful', 'educational', 'learning', 'knowledge'],
+            'weights': [0.35, 0.25, 0.2, 0.1, 0.1]
+        },
+        {
+            'id': 2,
+            'words': ['entertainment', 'funny', 'enjoyable', 'humor', 'laugh'],
+            'weights': [0.4, 0.3, 0.15, 0.1, 0.05]
+        }
+    ]
+
+    # Create mock topic names
+    mock_topic_names = ['content/quality', 'information/helpful', 'entertainment/funny']
+
     # Return mock result
     return {
         'video_info': video_info,
@@ -216,7 +239,9 @@ def mock_youtube_analysis(video_url: str) -> Dict[str, Any]:
         },
         'languages': {'en': 100.0},
         'multilingual': False,
-        'emoji_count': 3
+        'emoji_count': 3,
+        'key_topics': mock_topics,
+        'topic_names': mock_topic_names
     }
 
 # Global cache for previously analyzed videos
@@ -225,7 +250,7 @@ _video_cache = {}
 # Create a thread-local cache for sentiment analysis
 _thread_local = threading.local()
 
-def analyze_youtube_comments(video_url: str, api_key: str, max_comments: int = 100) -> Dict[str, Any]:
+def analyze_youtube_comments(video_url: str, api_key: str, max_comments: int = 100, stream_results: bool = False) -> Union[Dict[str, Any], Generator[Dict[str, Any], None, None]]:
     """
     Analyze comments for a YouTube video with highly optimized parallel processing
 
@@ -233,13 +258,14 @@ def analyze_youtube_comments(video_url: str, api_key: str, max_comments: int = 1
         video_url: The YouTube video URL
         api_key: The YouTube API key
         max_comments: Maximum number of comments to analyze
+        stream_results: If True, returns partial results as they become available
 
     Returns:
-        A dictionary with analysis results
+        A dictionary with analysis results. If stream_results is True, returns partial results
+        with a 'processing_status' field indicating the current stage.
     """
     import time
     from concurrent.futures import ThreadPoolExecutor, as_completed
-    import functools
     from collections import defaultdict
     import numpy as np
 
@@ -279,8 +305,13 @@ def analyze_youtube_comments(video_url: str, api_key: str, max_comments: int = 1
         'processing_status': 'fetching_comments',
         'processing_time': {
             'video_info': time.time() - start_time
-        }
+        },
+        'progress': 10  # 10% progress after getting video info
     }
+
+    # Return partial results if streaming is enabled
+    if stream_results:
+        yield result.copy()
 
     # Get comments with optimized fetching
     comments_start = time.time()
@@ -290,6 +321,11 @@ def analyze_youtube_comments(video_url: str, api_key: str, max_comments: int = 1
 
     result['processing_time']['comments_fetch'] = time.time() - comments_start
     result['processing_status'] = 'analyzing_sentiment'
+    result['progress'] = 25  # 25% progress after fetching comments
+
+    # Return partial results if streaming is enabled
+    if stream_results:
+        yield result.copy()
 
     # Optimized batch processing with dynamic sizing
     # Use larger batches for more comments to reduce overhead
@@ -352,8 +388,11 @@ def analyze_youtube_comments(video_url: str, api_key: str, max_comments: int = 1
                 'success': True
             }
         except Exception as e:
-            # Handle errors gracefully
-            print(f"Error processing chunk {chunk_index}: {str(e)}")
+            # Handle errors gracefully with proper logging
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error processing chunk {chunk_index}: {str(e)}", exc_info=True)
+
             # Return partial results if possible
             return {
                 'chunk_index': chunk_index,
@@ -371,16 +410,47 @@ def analyze_youtube_comments(video_url: str, api_key: str, max_comments: int = 1
         future_to_chunk = {executor.submit(process_chunk, chunk, i): i for i, chunk in enumerate(batches)}
 
         # Process results as they complete
+        completed_chunks = 0
         for future in as_completed(future_to_chunk):
             chunk_result = future.result()
             if chunk_result['success']:
                 all_comments.extend(chunk_result['comments'])
+
+            # Update progress based on completed chunks
+            completed_chunks += 1
+            progress_pct = 25 + (completed_chunks / len(batches)) * 40  # 25-65% range for sentiment analysis
+            result['progress'] = min(65, progress_pct)  # Cap at 65%
+
+            # Stream partial results if enabled
+            if stream_results and completed_chunks % max(1, len(batches) // 3) == 0:  # Update every ~third of processing
+                result['processing_status'] = f'analyzing_sentiment ({completed_chunks}/{len(batches)} batches)'
+                result['partial_comments'] = all_comments.copy()
+                yield result.copy()
 
     # Sort comments back into original order if needed
     # all_comments.sort(key=lambda x: comments.index(x))  # Uncomment if order matters
 
     result['processing_time']['sentiment_analysis'] = time.time() - sentiment_start
     result['processing_status'] = 'analyzing_engagement'
+    result['progress'] = 70  # 70% progress after sentiment analysis
+
+    # Return partial results with sentiment data if streaming is enabled
+    if stream_results:
+        # Add partial sentiment summary
+        sentiments = np.array([c.get('sentiment', 'neutral') for c in all_comments])
+        positive_count = np.sum(sentiments == 'positive')
+        neutral_count = np.sum(sentiments == 'neutral')
+        negative_count = np.sum(sentiments == 'negative')
+        total = len(all_comments)
+
+        result['partial_sentiment_summary'] = {
+            'positive': positive_count / total if total > 0 else 0,
+            'neutral': neutral_count / total if total > 0 else 0,
+            'negative': negative_count / total if total > 0 else 0,
+            'total_comments': total
+        }
+        result['comments'] = all_comments[:min(10, len(all_comments))]  # Send a few sample comments
+        yield result.copy()
 
     # Calculate sentiment distribution using numpy for speed
     sentiments = np.array([c.get('sentiment', 'neutral') for c in all_comments])
@@ -431,6 +501,45 @@ def analyze_youtube_comments(video_url: str, api_key: str, max_comments: int = 1
     total_processing_time = time.time() - start_time
     result['processing_time']['total'] = total_processing_time
 
+    # Extract key topics from comments
+    topics_start = time.time()
+    result['processing_status'] = 'extracting_topics'
+    result['progress'] = 85  # 85% progress when starting topic extraction
+
+    # Return partial results with engagement data if streaming is enabled
+    if stream_results:
+        result['sentiment_summary'] = {
+            'positive': combined_positive,
+            'neutral': combined_neutral,
+            'negative': combined_negative,
+            'total_comments': total
+        }
+        result['engagement_metrics'] = {
+            'view_count': video_info.get('view_count', 0),
+            'like_count': video_info.get('like_count', 0),
+            'comment_count': video_info.get('comment_count', 0),
+            'engagement_sentiment': engagement_sentiment
+        }
+        result['emotions'] = dict(emotions)
+        result['languages'] = dict(languages)
+        yield result.copy()
+
+    # Extract topics from all comments
+    topics = extract_topics_from_comments(all_comments, num_topics=5)
+
+    # Generate topic names
+    topic_names = []
+    for topic in topics:
+        # Create a name from the top 2 words in the topic
+        if len(topic['words']) >= 2:
+            topic_names.append(f"{topic['words'][0]}/{topic['words'][1]}")
+        elif len(topic['words']) == 1:
+            topic_names.append(topic['words'][0])
+        else:
+            topic_names.append(f"Topic {topic['id']}")
+
+    result['processing_time']['topic_extraction'] = time.time() - topics_start
+
     # Prepare final result
     final_result = {
         'video_info': video_info,
@@ -451,6 +560,8 @@ def analyze_youtube_comments(video_url: str, api_key: str, max_comments: int = 1
         'languages': dict(languages),  # Convert defaultdict to regular dict
         'multilingual': len(languages) > 1,
         'emoji_count': emoji_count,
+        'key_topics': topics,
+        'topic_names': topic_names,
         'processing_time': result['processing_time'],
         'processing_status': 'completed'
     }
@@ -458,4 +569,9 @@ def analyze_youtube_comments(video_url: str, api_key: str, max_comments: int = 1
     # Cache the result for future requests
     _video_cache[cache_key] = final_result
 
-    return final_result
+    # Final update with 100% progress if streaming
+    if stream_results:
+        final_result['progress'] = 100
+        yield final_result
+    else:
+        return final_result

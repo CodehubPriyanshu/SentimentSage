@@ -667,37 +667,26 @@ const TwitterAnalysis = () => {
             </Alert>
           )}
 
-          {isFetching && (
-            <div className="fixed inset-0 flex items-center justify-center bg-navy bg-opacity-90 z-50 backdrop-blur-sm">
+          {isFetching && tweets.length === 0 && (
+            <div className="fixed inset-0 flex items-center justify-center bg-navy bg-opacity-90 z-50">
               <div className="bg-navy-light p-8 rounded-xl shadow-2xl border border-gray-700 max-w-md w-full">
-                <LoadingIndicator
-                  size="large"
-                  text={`Analyzing tweets from @${twitterHandle.replace(
-                    /^@/,
-                    ""
-                  )}...`}
-                  showProgress={true}
-                  progress={analysisProgress}
-                  pulseEffect={true}
-                  steps={[
-                    "Fetching tweets",
-                    "Processing sentiment",
-                    "Analyzing emotions",
-                    "Generating insights",
-                  ]}
-                  currentStep={
-                    analysisProgress < 30
-                      ? 0
-                      : analysisProgress < 60
-                      ? 1
-                      : analysisProgress < 90
-                      ? 2
-                      : 3
-                  }
-                />
+                <div className="text-center">
+                  <h3 className="text-xl font-medium text-white mb-4">
+                    Analyzing Twitter/X Data
+                  </h3>
+                  <p className="text-gray-300 mb-4">
+                    Analyzing tweets from @{twitterHandle.replace(/^@/, "")}
+                  </p>
 
-                <div className="mt-6 text-center">
-                  <p className="text-gray-300 text-sm italic">
+                  {/* Simple progress bar */}
+                  <div className="w-full bg-navy-dark rounded-full h-3 overflow-hidden mb-4">
+                    <div
+                      className="bg-blue h-3 rounded-full"
+                      style={{ width: `${analysisProgress}%` }}
+                    ></div>
+                  </div>
+
+                  <p className="text-gray-400 text-sm">
                     Please wait while we analyze the tweets. This may take a
                     moment depending on the number of tweets.
                   </p>

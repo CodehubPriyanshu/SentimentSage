@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app, Response, stream_with_context
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.utils import secure_filename
 import os
@@ -560,7 +560,7 @@ def analyze_twitter():
 
 @analysis_bp.route('/youtube', methods=['POST'])
 def analyze_youtube():
-    """Analyze YouTube video comments"""
+    """Analyze YouTube video comments with streaming support"""
     try:
         # Get user ID if authenticated
         current_user_id = None
@@ -584,6 +584,7 @@ def analyze_youtube():
             return jsonify({'error': 'No video URL provided'}), 400
 
         video_url = data.get('video_url')
+        stream_mode = data.get('stream', False)  # Check if client wants streaming response
 
         # Extract video ID
         video_id = extract_video_id(video_url)
@@ -593,7 +594,43 @@ def analyze_youtube():
         # Get YouTube API key
         api_key = current_app.config.get('YOUTUBE_API_KEY')
 
-        # Analyze YouTube comments (will use mock data if API key is missing)
+        # If streaming is requested, use a streaming response
+        if stream_mode:
+            def generate_analysis():
+                # Start the analysis with streaming enabled
+                analysis_generator = analyze_youtube_comments(video_url, api_key, stream_results=True)
+
+                # Yield each partial result as it becomes available
+                for partial_result in analysis_generator:
+                    # Generate partial insights if we have enough data
+                    partial_insights = ""
+                    if 'sentiment_summary' in partial_result:
+                        try:
+                            partial_insights = generate_ai_insights(
+                                partial_result,
+                                'youtube',
+                                source_data=partial_result
+                            )
+                        except Exception as e:
+                            current_app.logger.warning(f"Error generating partial insights: {str(e)}")
+
+                    # Create a response object with the current state
+                    response_data = {
+                        'result': partial_result,
+                        'ai_insights': partial_insights,
+                        'progress': partial_result.get('progress', 0),
+                        'status': partial_result.get('processing_status', 'processing'),
+                        'is_complete': partial_result.get('processing_status') == 'completed'
+                    }
+
+                    # Yield the JSON response
+                    yield json.dumps(response_data) + '\n'
+
+            # Return a streaming response
+            return Response(stream_with_context(generate_analysis()),
+                          mimetype='application/x-json-stream')
+
+        # For non-streaming requests, use the original approach
         result = analyze_youtube_comments(video_url, api_key)
 
         if 'error' in result:

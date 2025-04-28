@@ -1,6 +1,10 @@
 from datetime import datetime, timezone
+import logging
 from bson import ObjectId
 from db.mongo_client import get_db
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 class Analysis:
     """Base Analysis model for MongoDB"""
@@ -10,30 +14,45 @@ class Analysis:
     @classmethod
     def get_collection(cls):
         """Get the MongoDB collection for analyses"""
-        return get_db()[cls.collection_name]
+        db = get_db()
+        if db is None:
+            logger.error(f"Failed to get database connection for {cls.__name__}")
+            return None
+        return db[cls.collection_name]
 
     @classmethod
     def create(cls, user_id, analysis_type, data):
         """Create a new analysis"""
-        if isinstance(user_id, str):
-            try:
-                user_id = ObjectId(user_id)
-            except:
-                raise ValueError("Invalid user ID")
+        try:
+            if isinstance(user_id, str):
+                try:
+                    user_id = ObjectId(user_id)
+                except Exception as e:
+                    logger.error(f"Invalid user ID format: {str(e)}")
+                    raise ValueError(f"Invalid user ID: {user_id}")
 
-        # Create base analysis document
-        analysis_doc = {
-            'user_id': user_id,
-            'analysis_type': analysis_type,
-            'created_at': datetime.now(timezone.utc),
-            'data': data
-        }
+            # Create base analysis document
+            analysis_doc = {
+                'user_id': user_id,
+                'analysis_type': analysis_type,
+                'created_at': datetime.now(timezone.utc),
+                'data': data
+            }
 
-        # Insert analysis document
-        result = cls.get_collection().insert_one(analysis_doc)
-        analysis_doc['_id'] = result.inserted_id
+            # Get collection
+            collection = cls.get_collection()
+            if collection is None:
+                logger.error("Failed to get collection, database connection may be down")
+                raise ConnectionError("Database connection failed")
 
-        return analysis_doc
+            # Insert analysis document
+            result = collection.insert_one(analysis_doc)
+            analysis_doc['_id'] = result.inserted_id
+
+            return analysis_doc
+        except Exception as e:
+            logger.error(f"Error creating {cls.__name__}: {str(e)}")
+            raise
 
     @classmethod
     def find_by_id(cls, analysis_id):

@@ -572,6 +572,123 @@ export const analysisApi = {
     }
   },
 
+  analyzeYouTubeStreaming: async (
+    videoUrl: string,
+    onProgress: (data: any) => void
+  ) => {
+    try {
+      // Use a longer timeout for YouTube analysis
+      const longerTimeout = DEFAULT_TIMEOUT * 3; // 90 seconds
+
+      // Show a toast notification that analysis is starting
+      toast({
+        title: "YouTube Analysis",
+        description:
+          "Starting analysis of YouTube video with real-time updates...",
+      });
+
+      // Create AbortController for timeout handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), longerTimeout);
+
+      try {
+        // Make the streaming request
+        const response = await fetch(`${API_URL}/analyze/youtube`, {
+          method: "POST",
+          headers: {
+            ...getAuthHeaders(),
+            "Content-Type": "application/json",
+            Accept: "application/x-json-stream",
+          },
+          body: JSON.stringify({ video_url: videoUrl, stream: true }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          clearTimeout(timeoutId);
+          return handleApiError(response);
+        }
+
+        // Get the reader from the response body stream
+        const reader = response.body!.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let finalResult: any = null;
+
+        // Process the stream
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) {
+            // Process any remaining data in the buffer
+            if (buffer.trim()) {
+              try {
+                const result = JSON.parse(buffer.trim());
+                onProgress(result);
+                if (result.is_complete) {
+                  finalResult = result;
+                }
+              } catch (e) {
+                console.error("Error parsing JSON from stream:", e);
+              }
+            }
+            break;
+          }
+
+          // Decode the chunk and add to buffer
+          const chunk = decoder.decode(value, { stream: true });
+          buffer += chunk;
+
+          // Process complete JSON objects in the buffer
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || ""; // Keep the last incomplete line in the buffer
+
+          for (const line of lines) {
+            if (line.trim()) {
+              try {
+                const result = JSON.parse(line.trim());
+                onProgress(result);
+                if (result.is_complete) {
+                  finalResult = result;
+                }
+              } catch (e) {
+                console.error("Error parsing JSON from stream:", e);
+              }
+            }
+          }
+        }
+
+        clearTimeout(timeoutId);
+
+        // Show success toast
+        toast({
+          title: "Analysis Complete",
+          description: "YouTube video analysis completed successfully.",
+          variant: "default",
+        });
+
+        return finalResult;
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
+      }
+    } catch (error) {
+      // Check if this is an abort error
+      if (error.name === "AbortError") {
+        return handleApiError(
+          error,
+          "YouTube analysis timed out. The video may have too many comments or our servers are busy."
+        );
+      }
+
+      // Use a specific error message for YouTube analysis
+      return handleApiError(
+        error,
+        "Failed to analyze YouTube video. Please check the URL and try again."
+      );
+    }
+  },
+
   saveCommentAnalysis: async (data: Record<string, unknown>) => {
     try {
       // Add timeout to the fetch request

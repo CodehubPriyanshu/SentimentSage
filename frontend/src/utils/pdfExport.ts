@@ -489,30 +489,184 @@ export const exportAnalysisAsPDF = async (
           );
         });
 
-        // Add keywords section
+        // Add key topics section if available
         startY += 50;
         doc.setFontSize(12);
-        doc.text("Common Themes:", 14, startY);
+        doc.text("Key Topics:", 14, startY);
 
         startY += 8;
-        const keywords = (results.summary.keywords || []).slice(0, 10);
-        let keywordText = "";
-        keywords.forEach((keyword, index) => {
-          keywordText += keyword;
-          if (index < keywords.length - 1) {
-            keywordText += ", ";
+
+        if (results.key_topics && results.key_topics.length > 0) {
+          // Display key topics with their words
+          results.key_topics.slice(0, 5).forEach((topic, topicIndex) => {
+            const topicName =
+              results.topic_names && results.topic_names[topicIndex]
+                ? results.topic_names[topicIndex]
+                : topic.words.slice(0, 2).join("/");
+
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 128); // Dark blue
+            doc.text(
+              `${topicIndex + 1}. ${topicName}:`,
+              20,
+              startY + topicIndex * 8
+            );
+
+            // Display topic words
+            doc.setTextColor(0, 0, 0); // Black
+            const wordsList = topic.words.join(", ");
+            const splitWords = doc.splitTextToSize(wordsList, 160);
+            doc.text(splitWords, 40, startY + topicIndex * 8);
+          });
+
+          // Update startY based on number of topics
+          startY += Math.max(results.key_topics.length * 8, 20);
+        } else {
+          // Fallback to keywords if no topics available
+          const keywords = (results.summary.keywords || []).slice(0, 10);
+          let keywordText = "";
+          keywords.forEach((keyword, index) => {
+            keywordText += keyword;
+            if (index < keywords.length - 1) {
+              keywordText += ", ";
+            }
+          });
+
+          doc.setFontSize(10);
+          const splitKeywords = doc.splitTextToSize(
+            keywordText || "No keywords available",
+            180
+          );
+          doc.text(splitKeywords, 14, startY);
+
+          // Update startY based on keywords text height
+          startY += splitKeywords.length * 6;
+        }
+
+        // Add comment samples section if available
+        if (results.commentSamples) {
+          startY += 20;
+          doc.setFontSize(12);
+          doc.text("Comment Samples:", 14, startY);
+          startY += 10;
+
+          // Function to add a comment sample
+          const addCommentSample = (comment, sampleY, sentiment) => {
+            // Add sentiment badge
+            const sentimentColor =
+              sentiment === "positive"
+                ? [76, 175, 80] // Green
+                : sentiment === "negative"
+                ? [244, 67, 54] // Red
+                : [255, 193, 7]; // Yellow (neutral)
+
+            doc.setFillColor(
+              sentimentColor[0],
+              sentimentColor[1],
+              sentimentColor[2]
+            );
+            doc.roundedRect(14, sampleY - 4, 20, 6, 1, 1, "F");
+
+            doc.setTextColor(255, 255, 255); // White
+            doc.setFontSize(8);
+            doc.text(
+              sentiment.charAt(0).toUpperCase() + sentiment.slice(1),
+              24,
+              sampleY - 0.5,
+              { align: "center" }
+            );
+
+            // Add author and date
+            doc.setTextColor(0, 0, 0); // Black
+            doc.setFontSize(9);
+            doc.setFont(undefined, "bold");
+            doc.text(comment.author || "Anonymous", 40, sampleY - 1);
+
+            if (comment.published_at) {
+              const date = new Date(comment.published_at).toLocaleDateString();
+              doc.setFont(undefined, "normal");
+              doc.setFontSize(8);
+              doc.setTextColor(100, 100, 100); // Gray
+              doc.text(`Posted: ${date}`, 120, sampleY - 1);
+            }
+
+            // Add comment text
+            doc.setTextColor(0, 0, 0); // Black
+            doc.setFontSize(9);
+            doc.setFont(undefined, "normal");
+            const commentText =
+              comment.text.length > 150
+                ? comment.text.substring(0, 150) + "..."
+                : comment.text;
+            const splitText = doc.splitTextToSize(commentText, 170);
+            doc.text(splitText, 14, sampleY + 5);
+
+            // Return the height used
+            return Math.max(splitText.length * 5 + 10, 15);
+          };
+
+          // Add positive comments
+          if (
+            results.commentSamples.positive &&
+            results.commentSamples.positive.length > 0
+          ) {
+            doc.setFontSize(10);
+            doc.setFont(undefined, "bold");
+            doc.setTextColor(0, 0, 128); // Dark blue
+            doc.text("Positive Comments:", 14, startY);
+            doc.setFont(undefined, "normal");
+
+            let commentY = startY + 5;
+            results.commentSamples.positive.slice(0, 2).forEach((comment) => {
+              const height = addCommentSample(comment, commentY, "positive");
+              commentY += height;
+            });
+
+            startY = commentY + 5;
           }
-        });
 
-        doc.setFontSize(10);
-        const splitKeywords = doc.splitTextToSize(
-          keywordText || "No keywords available",
-          180
-        );
-        doc.text(splitKeywords, 14, startY);
+          // Add neutral comments
+          if (
+            results.commentSamples.neutral &&
+            results.commentSamples.neutral.length > 0
+          ) {
+            doc.setFontSize(10);
+            doc.setFont(undefined, "bold");
+            doc.setTextColor(0, 0, 128); // Dark blue
+            doc.text("Neutral Comments:", 14, startY);
+            doc.setFont(undefined, "normal");
 
-        // Only add comments section for comment analysis
-        if (results.comments && results.comments.length > 0) {
+            let commentY = startY + 5;
+            results.commentSamples.neutral.slice(0, 2).forEach((comment) => {
+              const height = addCommentSample(comment, commentY, "neutral");
+              commentY += height;
+            });
+
+            startY = commentY + 5;
+          }
+
+          // Add negative comments
+          if (
+            results.commentSamples.negative &&
+            results.commentSamples.negative.length > 0
+          ) {
+            doc.setFontSize(10);
+            doc.setFont(undefined, "bold");
+            doc.setTextColor(0, 0, 128); // Dark blue
+            doc.text("Negative Comments:", 14, startY);
+            doc.setFont(undefined, "normal");
+
+            let commentY = startY + 5;
+            results.commentSamples.negative.slice(0, 2).forEach((comment) => {
+              const height = addCommentSample(comment, commentY, "negative");
+              commentY += height;
+            });
+
+            startY = commentY + 5;
+          }
+        }
+        // Fallback to old comment display if commentSamples not available
+        else if (results.comments && results.comments.length > 0) {
           // Filter comments based on current filters
           let filteredComments = results.comments;
 
@@ -531,7 +685,7 @@ export const exportAnalysisAsPDF = async (
           }
 
           // Add comments table
-          startY += splitKeywords.length * 6 + 10;
+          startY += 20;
           doc.setFontSize(14);
           doc.text("Individual Comments", 14, startY);
 

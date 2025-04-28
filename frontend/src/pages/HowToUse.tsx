@@ -1,7 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Upload, BarChart2, Download, ArrowRight } from "lucide-react";
+import {
+  Upload,
+  BarChart2,
+  Download,
+  ArrowRight,
+  Twitter,
+  Youtube,
+  FileText,
+  MessageSquare,
+} from "lucide-react";
 
 const HowToUse = () => {
   const steps = [
@@ -40,11 +49,18 @@ const HowToUse = () => {
             Analyze social media sentiment in just a few simple steps
           </p>
 
-          <div className="card p-8 mb-12 bg-navy-dark dark:bg-navy-dark light:bg-gray-100">
+          <div className="card p-8 mb-12 bg-navy-dark dark:bg-navy-dark light:bg-gray-100 hover:shadow-xl transition-shadow">
             <div className="grid md:grid-cols-3 gap-8">
               {steps.map((step, index) => (
-                <div key={index} className="text-center">
-                  <div className="flex justify-center mb-4">{step.icon}</div>
+                <div
+                  key={index}
+                  className="text-center transform hover:scale-105 transition-transform"
+                >
+                  <div className="flex justify-center mb-4">
+                    <div className="rounded-full bg-blue/10 p-3 w-16 h-16 flex items-center justify-center">
+                      {step.icon}
+                    </div>
+                  </div>
                   <h3 className="text-xl font-bold text-white dark:text-white light:text-navy mb-2">
                     {step.title}
                   </h3>
@@ -67,7 +83,7 @@ const HowToUse = () => {
               Detailed Instructions
             </h2>
 
-            <div className="card p-6 bg-navy-dark dark:bg-navy-dark light:bg-gray-100">
+            <div className="card p-6 bg-navy-dark dark:bg-navy-dark light:bg-gray-100 hover:shadow-xl transition-shadow">
               <h3 className="text-xl font-bold text-white dark:text-white light:text-navy mb-2">
                 1. Upload Your Comments
               </h3>
@@ -85,7 +101,7 @@ const HowToUse = () => {
               </ul>
             </div>
 
-            <div className="card p-6 bg-navy-dark dark:bg-navy-dark light:bg-gray-100">
+            <div className="card p-6 bg-navy-dark dark:bg-navy-dark light:bg-gray-100 hover:shadow-xl transition-shadow">
               <h3 className="text-xl font-bold text-white dark:text-white light:text-navy mb-2">
                 2. Analyze Sentiment
               </h3>
@@ -104,7 +120,7 @@ const HowToUse = () => {
               </ul>
             </div>
 
-            <div className="card p-6 bg-navy-dark dark:bg-navy-dark light:bg-gray-100">
+            <div className="card p-6 bg-navy-dark dark:bg-navy-dark light:bg-gray-100 hover:shadow-xl transition-shadow">
               <h3 className="text-xl font-bold text-white dark:text-white light:text-navy mb-2">
                 3. Export Results
               </h3>
@@ -120,9 +136,86 @@ const HowToUse = () => {
             </div>
           </div>
 
+          <div className="space-y-6 mb-12">
+            <h2 className="text-2xl font-bold text-white dark:text-white light:text-navy">
+              Analysis Types
+            </h2>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="card p-6 bg-navy-dark dark:bg-navy-dark light:bg-gray-100 hover:shadow-xl transition-shadow">
+                <div className="flex items-center mb-3">
+                  <MessageSquare className="h-6 w-6 text-blue mr-2" />
+                  <h3 className="text-xl font-bold text-white dark:text-white light:text-navy">
+                    Text Analysis
+                  </h3>
+                </div>
+                <p className="text-gray-300 dark:text-gray-300 light:text-gray-dark mb-3">
+                  Paste any text to get instant sentiment analysis with AI
+                  insights.
+                </p>
+                <ul className="list-disc pl-5 text-gray-300 dark:text-gray-300 light:text-gray-dark space-y-1">
+                  <li>Real-time analysis as you type</li>
+                  <li>Sentiment classification</li>
+                  <li>Key topic extraction</li>
+                </ul>
+              </div>
+
+              <div className="card p-6 bg-navy-dark dark:bg-navy-dark light:bg-gray-100 hover:shadow-xl transition-shadow">
+                <div className="flex items-center mb-3">
+                  <Twitter className="h-6 w-6 text-blue mr-2" />
+                  <h3 className="text-xl font-bold text-white dark:text-white light:text-navy">
+                    Twitter/X Analysis
+                  </h3>
+                </div>
+                <p className="text-gray-300 dark:text-gray-300 light:text-gray-dark mb-3">
+                  Analyze tweets and replies to understand audience sentiment.
+                </p>
+                <ul className="list-disc pl-5 text-gray-300 dark:text-gray-300 light:text-gray-dark space-y-1">
+                  <li>Enter tweet URL or username</li>
+                  <li>Analyze multiple tweets at once</li>
+                  <li>View sentiment distribution</li>
+                </ul>
+              </div>
+
+              <div className="card p-6 bg-navy-dark dark:bg-navy-dark light:bg-gray-100 hover:shadow-xl transition-shadow">
+                <div className="flex items-center mb-3">
+                  <Youtube className="h-6 w-6 text-blue mr-2" />
+                  <h3 className="text-xl font-bold text-white dark:text-white light:text-navy">
+                    YouTube Analysis
+                  </h3>
+                </div>
+                <p className="text-gray-300 dark:text-gray-300 light:text-gray-dark mb-3">
+                  Analyze comments on YouTube videos to gauge viewer sentiment.
+                </p>
+                <ul className="list-disc pl-5 text-gray-300 dark:text-gray-300 light:text-gray-dark space-y-1">
+                  <li>Enter video URL</li>
+                  <li>Process hundreds of comments</li>
+                  <li>View sentiment breakdown</li>
+                </ul>
+              </div>
+
+              <div className="card p-6 bg-navy-dark dark:bg-navy-dark light:bg-gray-100 hover:shadow-xl transition-shadow">
+                <div className="flex items-center mb-3">
+                  <FileText className="h-6 w-6 text-blue mr-2" />
+                  <h3 className="text-xl font-bold text-white dark:text-white light:text-navy">
+                    CSV Analysis
+                  </h3>
+                </div>
+                <p className="text-gray-300 dark:text-gray-300 light:text-gray-dark mb-3">
+                  Upload CSV files with comments for batch sentiment analysis.
+                </p>
+                <ul className="list-disc pl-5 text-gray-300 dark:text-gray-300 light:text-gray-dark space-y-1">
+                  <li>Upload CSV with comments</li>
+                  <li>Process thousands of entries</li>
+                  <li>Get comprehensive reports</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
           <div className="text-center">
             <Link to="/analyze">
-              <Button className="btn-primary">
+              <Button className="btn-primary hover:bg-blue-light transition-transform hover:scale-105">
                 Try It Now <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>

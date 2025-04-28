@@ -61,6 +61,12 @@ interface VideoInfo {
   thumbnail: string;
 }
 
+interface Topic {
+  id: number;
+  words: string[];
+  weights: number[];
+}
+
 interface AnalysisResult {
   summary?: string;
   sentiment?: {
@@ -99,6 +105,8 @@ interface AnalysisResult {
   languages?: Record<string, number>;
   multilingual?: boolean;
   emoji_count?: number;
+  key_topics?: Topic[];
+  topic_names?: string[];
 }
 
 const YoutubeAnalysis = () => {
@@ -115,11 +123,13 @@ const YoutubeAnalysis = () => {
     sentimentData: boolean;
     comments: boolean;
     emotions: boolean;
+    topics: boolean;
   }>({
     videoInfo: false,
     sentimentData: false,
     comments: false,
     emotions: false,
+    topics: false,
   });
 
   // Clear error when URL changes
@@ -232,6 +242,7 @@ const YoutubeAnalysis = () => {
         sentimentData: true,
         comments: true,
         emotions: true,
+        topics: true,
       });
       setLoadingStage("");
       setIsFetching(false);
@@ -253,6 +264,7 @@ const YoutubeAnalysis = () => {
       sentimentData: false,
       comments: false,
       emotions: false,
+      topics: false,
     });
     setAnalysisProgress(0);
     setShowingPartial(false);
@@ -273,163 +285,180 @@ const YoutubeAnalysis = () => {
 
       // Create a partial result that we'll update progressively
       const partialResult: Partial<AnalysisResult> = {};
-
-      // Start the API call but don't await it yet
-      const responsePromise = analysisApi.analyzeYouTube(youtubeUrl);
-
-      // Set up a timer to show partial results while waiting
       const startTime = Date.now();
-      let showedPartial = false;
 
-      // Show partial results after a short delay if the API call is taking too long
-      const partialTimer = setTimeout(() => {
-        setShowingPartial(true);
-        setLoadingStage("Loading video information...");
-        setAnalysisProgress(10);
-
-        // Create minimal partial result to show something quickly
-        if (!result) {
-          const minimalResult: Partial<AnalysisResult> = {
-            video_info: {
-              video_id: videoId,
-              title: "Loading video details...",
-              channel: "Loading...",
-              published_at: new Date().toISOString(),
-              view_count: 0,
-              like_count: 0,
-              comment_count: 0,
-              thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-            },
-            sentiment_summary: {
-              positive: 0.33,
-              neutral: 0.34,
-              negative: 0.33,
-              total_comments: 0,
-            },
-          };
-
-          setResult(minimalResult as AnalysisResult);
-          setPartialResults((prev) => ({ ...prev, videoInfo: true }));
-          showedPartial = true;
-        }
-      }, 500); // Show something after 500ms
-
-      // Now await the actual API response
-      const response = await responsePromise;
-
-      // Clear the partial timer if it hasn't fired yet
-      clearTimeout(partialTimer);
-
-      // Check for errors
-      if (response.error) {
-        throw new Error(response.error);
-      }
-
-      // Step 1: Show video info immediately
-      if (response.result.video_info) {
-        setLoadingStage("Loading video information...");
-        partialResult.video_info = response.result.video_info;
-        setPartialResults((prev) => ({ ...prev, videoInfo: true }));
-        setResult(partialResult as AnalysisResult);
-        setAnalysisProgress(20);
-
-        // Show a progress toast only if we didn't already show partial results
-        if (!showedPartial) {
-          toast({
-            title: "Video Info Loaded",
-            description: "Now analyzing sentiment data...",
-          });
-        }
-
-        // Log progress
-        errorLogger.info("YouTube analysis progress: video info loaded", {
-          videoId: response.result.video_info.video_id,
-          title: response.result.video_info.title,
-        });
-      }
-
-      // Step 2: Add sentiment data as soon as it's available
-      if (response.result.sentiment_summary) {
-        setLoadingStage("Processing sentiment analysis...");
-        partialResult.sentiment_summary = response.result.sentiment_summary;
-        setPartialResults((prev) => ({ ...prev, sentimentData: true }));
-        setResult(partialResult as AnalysisResult);
-        setAnalysisProgress(50);
-
-        // Log progress
-        errorLogger.info(
-          "YouTube analysis progress: sentiment data processed",
-          {
-            totalComments: response.result.sentiment_summary.total_comments,
+      // Use the streaming API for real-time updates
+      const response = await analysisApi.analyzeYouTubeStreaming(
+        youtubeUrl,
+        (streamData) => {
+          // Update progress based on the stream data
+          if (streamData.progress) {
+            setAnalysisProgress(streamData.progress);
           }
-        );
+
+          // Update loading stage
+          if (streamData.status) {
+            setLoadingStage(streamData.status);
+          }
+
+          // Process partial results as they come in
+          if (streamData.result) {
+            // Step 1: Show video info immediately
+            if (streamData.result.video_info && !partialResults.videoInfo) {
+              partialResult.video_info = streamData.result.video_info;
+              setPartialResults((prev) => ({ ...prev, videoInfo: true }));
+              setResult(partialResult as AnalysisResult);
+              setShowingPartial(true);
+
+              // Log progress
+              errorLogger.info("YouTube analysis progress: video info loaded", {
+                videoId: streamData.result.video_info.video_id,
+                title: streamData.result.video_info.title,
+              });
+            }
+
+            // Step 2: Add sentiment data as soon as it's available
+            if (
+              (streamData.result.sentiment_summary ||
+                streamData.result.partial_sentiment_summary) &&
+              !partialResults.sentimentData
+            ) {
+              partialResult.sentiment_summary =
+                streamData.result.sentiment_summary ||
+                streamData.result.partial_sentiment_summary;
+              setPartialResults((prev) => ({ ...prev, sentimentData: true }));
+              setResult(partialResult as AnalysisResult);
+
+              // Log progress
+              errorLogger.info(
+                "YouTube analysis progress: sentiment data processed",
+                {
+                  totalComments:
+                    partialResult.sentiment_summary?.total_comments || 0,
+                }
+              );
+            }
+
+            // Step 3: Add comments data
+            if (
+              (streamData.result.comments ||
+                streamData.result.partial_comments) &&
+              !partialResults.comments
+            ) {
+              partialResult.comments =
+                streamData.result.comments ||
+                streamData.result.partial_comments;
+              setPartialResults((prev) => ({ ...prev, comments: true }));
+              setResult(partialResult as AnalysisResult);
+            }
+
+            // Step 4: Add emotions and other data
+            if (streamData.result.emotions && !partialResults.emotions) {
+              partialResult.emotions = streamData.result.emotions;
+              partialResult.languages = streamData.result.languages;
+              partialResult.multilingual = streamData.result.multilingual;
+              partialResult.emoji_count = streamData.result.emoji_count;
+              setPartialResults((prev) => ({ ...prev, emotions: true }));
+              setResult(partialResult as AnalysisResult);
+            }
+
+            // Step 5: Add key topics if available
+            if (streamData.result.key_topics && !partialResults.topics) {
+              partialResult.key_topics = streamData.result.key_topics;
+              partialResult.topic_names = streamData.result.topic_names;
+              setPartialResults((prev) => ({ ...prev, topics: true }));
+              setResult(partialResult as AnalysisResult);
+            }
+
+            // Step 6: Add AI insights if available
+            if (streamData.ai_insights && !partialResult.aiInsights) {
+              partialResult.aiInsights = streamData.ai_insights;
+              partialResult.keywords = extractKeywords(streamData.ai_insights);
+              if (partialResult.sentiment_summary) {
+                partialResult.summary = generateSummary(
+                  streamData.ai_insights,
+                  partialResult.sentiment_summary
+                );
+              }
+              setResult(partialResult as AnalysisResult);
+            }
+
+            // Check if analysis is complete
+            if (streamData.is_complete) {
+              // Final update with complete data
+              const finalResult = partialResult as AnalysisResult;
+
+              // Make sure we set the result first before clearing loading state
+              setResult(finalResult);
+
+              // Clear all loading states
+              setLoadingStage("");
+              setIsFetching(false);
+              setAnalysisProgress(100);
+              setShowingPartial(false);
+
+              // Add to cache
+              setAnalysisCache((prev) => ({
+                ...prev,
+                [videoId]: finalResult,
+              }));
+
+              // Calculate processing time
+              const processingTime = (Date.now() - startTime) / 1000;
+
+              // Show completion toast
+              toast({
+                title: "Analysis Complete",
+                description: `Successfully analyzed ${
+                  finalResult.sentiment_summary?.total_comments || 0
+                } comments in ${processingTime.toFixed(1)}s`,
+              });
+
+              // Log successful completion
+              errorLogger.info("YouTube analysis completed successfully", {
+                videoId: finalResult.video_info?.video_id,
+                totalComments:
+                  finalResult.sentiment_summary?.total_comments || 0,
+                processingTime: streamData.result.processing_time,
+                clientProcessingTime: processingTime,
+              });
+
+              // Force a re-render to ensure loading overlay is removed
+              setTimeout(() => {
+                setIsFetching(false);
+              }, 100);
+            }
+          }
+        }
+      );
+
+      // If we get here and still fetching, it means the streaming completed but didn't mark as complete
+      if (isFetching) {
+        // Make sure we have a result before clearing loading state
+        if (partialResult.video_info) {
+          const finalResult = partialResult as AnalysisResult;
+
+          // Set the result first
+          setResult(finalResult);
+
+          // Add to cache
+          setAnalysisCache((prev) => ({
+            ...prev,
+            [videoId]: finalResult,
+          }));
+        }
+
+        // Clear all loading states
+        setIsFetching(false);
+        setLoadingStage("");
+        setAnalysisProgress(100);
+        setShowingPartial(false);
+
+        // Force a re-render to ensure loading overlay is removed
+        setTimeout(() => {
+          setIsFetching(false);
+        }, 100);
       }
-
-      // Step 3: Add comments data
-      if (response.result.comments) {
-        setLoadingStage("Processing comments...");
-        partialResult.comments = response.result.comments;
-        setPartialResults((prev) => ({ ...prev, comments: true }));
-        setResult(partialResult as AnalysisResult);
-        setAnalysisProgress(70);
-      }
-
-      // Step 4: Add emotions and other data
-      if (response.result.emotions) {
-        setLoadingStage("Analyzing emotions and languages...");
-        partialResult.emotions = response.result.emotions;
-        partialResult.languages = response.result.languages;
-        partialResult.multilingual = response.result.multilingual;
-        partialResult.emoji_count = response.result.emoji_count;
-        setPartialResults((prev) => ({ ...prev, emotions: true }));
-        setResult(partialResult as AnalysisResult);
-        setAnalysisProgress(85);
-      }
-
-      // Step 5: Add AI insights and keywords last (these are usually the slowest)
-      if (response.ai_insights) {
-        setLoadingStage("Generating AI insights...");
-        partialResult.aiInsights = response.ai_insights;
-        partialResult.keywords = extractKeywords(response.ai_insights);
-        partialResult.summary = generateSummary(
-          response.ai_insights,
-          response.result.sentiment_summary
-        );
-        setAnalysisProgress(95);
-      }
-
-      // Final update with complete data
-      const finalResult = partialResult as AnalysisResult;
-      setResult(finalResult);
-      setLoadingStage("");
-      setIsFetching(false);
-      setAnalysisProgress(100);
-      setShowingPartial(false);
-
-      // Add to cache
-      setAnalysisCache((prev) => ({
-        ...prev,
-        [videoId]: finalResult,
-      }));
-
-      // Calculate processing time
-      const processingTime = (Date.now() - startTime) / 1000;
-
-      // Show completion toast
-      toast({
-        title: "Analysis Complete",
-        description: `Successfully analyzed ${
-          response.result.sentiment_summary.total_comments
-        } comments in ${processingTime.toFixed(1)}s`,
-      });
-
-      // Log successful completion
-      errorLogger.info("YouTube analysis completed successfully", {
-        videoId: response.result.video_info.video_id,
-        totalComments: response.result.sentiment_summary.total_comments,
-        processingTime: response.result.processing_time,
-        clientProcessingTime: processingTime,
-      });
     } catch (error) {
       setIsFetching(false);
       setLoadingStage("");
@@ -536,6 +565,23 @@ const YoutubeAnalysis = () => {
         },
         video_info: result.video_info,
         aiInsights: result.aiInsights,
+        key_topics: result.key_topics || [],
+        topic_names: result.topic_names || [],
+        // Add sample comments for each sentiment category
+        commentSamples: {
+          positive:
+            result.comments
+              ?.filter((c) => c.sentiment === "positive")
+              .slice(0, 3) || [],
+          neutral:
+            result.comments
+              ?.filter((c) => c.sentiment === "neutral")
+              .slice(0, 3) || [],
+          negative:
+            result.comments
+              ?.filter((c) => c.sentiment === "negative")
+              .slice(0, 3) || [],
+        },
       };
 
       // Export as PDF
@@ -791,39 +837,27 @@ const YoutubeAnalysis = () => {
               </Alert>
             )}
 
-            {/* Enhanced Loading state with animation */}
-            {isFetching && (
-              <div className="fixed inset-0 flex items-center justify-center bg-navy bg-opacity-90 z-50 backdrop-blur-sm">
+            {/* Simple Loading state without animation - only show when fetching and no results yet */}
+            {isFetching && !result && (
+              <div className="fixed inset-0 flex items-center justify-center bg-navy bg-opacity-90 z-50">
                 <div className="bg-navy-light p-8 rounded-xl shadow-2xl border border-gray-700 max-w-md w-full">
-                  <LoadingIndicator
-                    size="large"
-                    text={loadingStage || "Analyzing YouTube video..."}
-                    showProgress={true}
-                    progress={analysisProgress}
-                    pulseEffect={true}
-                    steps={[
-                      "Fetching video information",
-                      "Processing comments",
-                      "Analyzing sentiment",
-                      "Generating insights",
-                    ]}
-                    currentStep={
-                      partialResults.videoInfo
-                        ? partialResults.sentimentData
-                          ? partialResults.comments
-                            ? 3
-                            : 2
-                          : 1
-                        : 0
-                    }
-                  />
+                  <div className="flex flex-col items-center justify-center space-y-6">
+                    <div className="text-center space-y-2">
+                      <h3 className="text-xl font-medium text-white">
+                        Analyzing YouTube Video
+                      </h3>
+                      <p className="text-gray-400 text-sm">
+                        Please wait while we analyze the video comments.
+                      </p>
+                    </div>
 
-                  {/* Don't show partial results until fully processed */}
-                  <div className="mt-6 text-center">
-                    <p className="text-gray-300 text-sm italic">
-                      Please wait while we analyze the video. This may take a
-                      moment depending on the number of comments.
-                    </p>
+                    {/* Static progress indicator */}
+                    <div className="w-full bg-navy-dark rounded-full h-3 overflow-hidden">
+                      <div
+                        className="bg-blue h-3 rounded-full"
+                        style={{ width: `${analysisProgress}%` }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1408,22 +1442,70 @@ const YoutubeAnalysis = () => {
                   {/* Key Topics */}
                   <Card className="bg-navy-dark dark:bg-navy-dark light:bg-white">
                     <CardHeader>
-                      <CardTitle className="text-white dark:text-white light:text-navy">
+                      <CardTitle className="text-white dark:text-white light:text-navy flex items-center">
+                        <MessageCircle className="h-5 w-5 mr-2 text-blue" />
                         Key Topics
                       </CardTitle>
+                      <CardDescription className="text-gray-400 dark:text-gray-400 light:text-gray-dark">
+                        Main themes discussed in comments
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex flex-wrap gap-2 pt-4">
-                        {result.keywords &&
-                          result.keywords.map((keyword, index) => (
-                            <span
-                              key={index}
-                              className="px-3 py-1 bg-navy-light dark:bg-navy-light light:bg-gray-200 rounded-full text-gray-200 dark:text-gray-200 light:text-gray-700 text-sm"
-                            >
-                              {keyword}
-                            </span>
+                      {result.key_topics && result.key_topics.length > 0 ? (
+                        <div className="space-y-4">
+                          {result.key_topics.map((topic, topicIndex) => (
+                            <div key={topicIndex}>
+                              <div className="flex items-center justify-between mb-1">
+                                <div className="flex items-center">
+                                  <div
+                                    className={`w-3 h-3 mr-2 rounded-full ${
+                                      topicIndex === 0
+                                        ? "bg-blue"
+                                        : topicIndex === 1
+                                        ? "bg-purple-500"
+                                        : topicIndex === 2
+                                        ? "bg-green-500"
+                                        : "bg-yellow-500"
+                                    }`}
+                                  ></div>
+                                  <span className="text-gray-200 dark:text-gray-200 light:text-gray-700 text-sm">
+                                    {result.topic_names &&
+                                    result.topic_names[topicIndex]
+                                      ? result.topic_names[topicIndex]
+                                      : topic.words.slice(0, 2).join("/")}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex flex-wrap gap-1 mt-1 mb-3">
+                                {topic.words.map((word, wordIndex) => (
+                                  <span
+                                    key={wordIndex}
+                                    className={`px-2 py-0.5 rounded-full text-xs ${
+                                      wordIndex === 0
+                                        ? "bg-blue/20 text-blue"
+                                        : "bg-navy-light text-gray-300"
+                                    }`}
+                                  >
+                                    {word}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
                           ))}
-                      </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-2 pt-4">
+                          {result.keywords &&
+                            result.keywords.map((keyword, index) => (
+                              <span
+                                key={index}
+                                className="px-3 py-1 bg-navy-light dark:bg-navy-light light:bg-gray-200 rounded-full text-gray-200 dark:text-gray-200 light:text-gray-700 text-sm"
+                              >
+                                {keyword}
+                              </span>
+                            ))}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
 
@@ -1456,7 +1538,7 @@ const YoutubeAnalysis = () => {
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
                               <div
-                                className="bg-yellow-400 h-2 rounded-full transition-all duration-500"
+                                className="bg-yellow-400 h-2 rounded-full"
                                 style={{
                                   width: `${Math.round(
                                     result.emotions.joy * 100
@@ -1481,7 +1563,7 @@ const YoutubeAnalysis = () => {
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
                               <div
-                                className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                                className="bg-blue-500 h-2 rounded-full"
                                 style={{
                                   width: `${Math.round(
                                     result.emotions.sadness * 100
@@ -1506,7 +1588,7 @@ const YoutubeAnalysis = () => {
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
                               <div
-                                className="bg-red-500 h-2 rounded-full transition-all duration-500"
+                                className="bg-red-500 h-2 rounded-full"
                                 style={{
                                   width: `${Math.round(
                                     result.emotions.anger * 100
@@ -1531,7 +1613,7 @@ const YoutubeAnalysis = () => {
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
                               <div
-                                className="bg-purple-500 h-2 rounded-full transition-all duration-500"
+                                className="bg-purple-500 h-2 rounded-full"
                                 style={{
                                   width: `${Math.round(
                                     result.emotions.fear * 100
@@ -1556,7 +1638,7 @@ const YoutubeAnalysis = () => {
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
                               <div
-                                className="bg-cyan-400 h-2 rounded-full transition-all duration-500"
+                                className="bg-cyan-400 h-2 rounded-full"
                                 style={{
                                   width: `${Math.round(
                                     result.emotions.surprise * 100
@@ -1581,7 +1663,7 @@ const YoutubeAnalysis = () => {
                             </div>
                             <div className="w-full bg-gray-700 rounded-full h-2">
                               <div
-                                className="bg-green-600 h-2 rounded-full transition-all duration-500"
+                                className="bg-green-600 h-2 rounded-full"
                                 style={{
                                   width: `${Math.round(
                                     result.emotions.disgust * 100
@@ -1634,7 +1716,7 @@ const YoutubeAnalysis = () => {
                                 </div>
                                 <div className="w-full bg-gray-700 rounded-full h-2">
                                   <div
-                                    className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                                    className="bg-blue-500 h-2 rounded-full"
                                     style={{
                                       width: `${Math.round(
                                         percentage as number
@@ -1695,91 +1777,101 @@ const YoutubeAnalysis = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {result.comments &&
-                        result.comments.slice(0, 5).map((comment, index) => (
-                          <div
-                            key={index}
-                            className="p-4 bg-navy-light dark:bg-navy-light light:bg-gray-100 rounded-md"
-                          >
-                            <div className="flex justify-between items-start mb-2">
-                              <div className="font-medium text-gray-200 dark:text-gray-200 light:text-gray-800">
-                                {comment.author}
-                                {comment.language &&
-                                  comment.language !== "en" && (
-                                    <span className="ml-2 text-xs text-blue-400 font-normal">
-                                      {getLanguageName(comment.language)}
-                                    </span>
-                                  )}
-                              </div>
-                              <Badge
-                                className={`ml-2 ${
-                                  comment.sentiment === "positive"
-                                    ? "bg-green-600"
-                                    : comment.sentiment === "negative"
-                                    ? "bg-red-600"
-                                    : "bg-yellow-600"
-                                }`}
+                      {result.comments && (
+                        <>
+                          {/* Show all available comments */}
+                          {result.comments
+                            .slice(0, 10)
+                            .map((comment, index) => (
+                              <div
+                                key={index}
+                                className="p-4 bg-navy-light dark:bg-navy-light light:bg-gray-100 rounded-md"
                               >
-                                {comment.sentiment.charAt(0).toUpperCase() +
-                                  comment.sentiment.slice(1)}
-                              </Badge>
-                            </div>
-
-                            <p className="text-gray-200 dark:text-gray-200 light:text-gray-800 mt-2">
-                              {comment.text}
-                              {comment.has_emojis &&
-                                comment.emojis &&
-                                comment.emojis.length > 0 && (
-                                  <span className="ml-1">
-                                    {comment.emojis.slice(0, 3).join(" ")}
-                                  </span>
-                                )}
-                            </p>
-
-                            {comment.translated_text && (
-                              <div className="mt-2 p-2 bg-navy-dark rounded-md">
-                                <p className="text-gray-400 text-sm italic">
-                                  <span className="text-blue-400 font-medium">
-                                    Translated:
-                                  </span>{" "}
-                                  {comment.translated_text}
-                                </p>
-                              </div>
-                            )}
-
-                            <div className="flex justify-between items-center text-xs text-gray-400 mt-3">
-                              <div>
-                                {new Date(
-                                  comment.published_at
-                                ).toLocaleDateString()}{" "}
-                                • {comment.like_count} likes
-                              </div>
-                              {comment.emotions &&
-                                Object.entries(comment.emotions).length > 0 && (
-                                  <div className="text-xs">
-                                    {Object.entries(comment.emotions)
-                                      .sort(
-                                        ([, a], [, b]) =>
-                                          (b as number) - (a as number)
-                                      )
-                                      .slice(0, 1)
-                                      .map(([emotion, score]) => (
-                                        <span
-                                          key={emotion}
-                                          className="capitalize"
-                                        >
-                                          {emotion}:{" "}
-                                          {Math.round((score as number) * 100)}%
+                                <div className="flex justify-between items-start mb-2">
+                                  <div className="font-medium text-gray-200 dark:text-gray-200 light:text-gray-800">
+                                    {comment.author}
+                                    {comment.language &&
+                                      comment.language !== "en" && (
+                                        <span className="ml-2 text-xs text-blue-400 font-normal">
+                                          {getLanguageName(comment.language)}
                                         </span>
-                                      ))}
+                                      )}
+                                  </div>
+                                  <Badge
+                                    className={`ml-2 ${
+                                      comment.sentiment === "positive"
+                                        ? "bg-green-600"
+                                        : comment.sentiment === "negative"
+                                        ? "bg-red-600"
+                                        : "bg-yellow-600"
+                                    }`}
+                                  >
+                                    {comment.sentiment.charAt(0).toUpperCase() +
+                                      comment.sentiment.slice(1)}
+                                  </Badge>
+                                </div>
+
+                                <p className="text-gray-200 dark:text-gray-200 light:text-gray-800 mt-2">
+                                  {comment.text}
+                                  {comment.has_emojis &&
+                                    comment.emojis &&
+                                    comment.emojis.length > 0 && (
+                                      <span className="ml-1">
+                                        {comment.emojis.slice(0, 3).join(" ")}
+                                      </span>
+                                    )}
+                                </p>
+
+                                {comment.translated_text && (
+                                  <div className="mt-2 p-2 bg-navy-dark rounded-md">
+                                    <p className="text-gray-400 text-sm italic">
+                                      <span className="text-blue-400 font-medium">
+                                        Translated:
+                                      </span>{" "}
+                                      {comment.translated_text}
+                                    </p>
                                   </div>
                                 )}
-                            </div>
-                          </div>
-                        ))}
-                      {result.comments && result.comments.length > 5 && (
+
+                                <div className="flex justify-between items-center text-xs text-gray-400 mt-3">
+                                  <div>
+                                    {new Date(
+                                      comment.published_at
+                                    ).toLocaleDateString()}{" "}
+                                    • {comment.like_count} likes
+                                  </div>
+                                  {comment.emotions &&
+                                    Object.entries(comment.emotions).length >
+                                      0 && (
+                                      <div className="text-xs">
+                                        {Object.entries(comment.emotions)
+                                          .sort(
+                                            ([, a], [, b]) =>
+                                              (b as number) - (a as number)
+                                          )
+                                          .slice(0, 1)
+                                          .map(([emotion, score]) => (
+                                            <span
+                                              key={emotion}
+                                              className="capitalize"
+                                            >
+                                              {emotion}:{" "}
+                                              {Math.round(
+                                                (score as number) * 100
+                                              )}
+                                              %
+                                            </span>
+                                          ))}
+                                      </div>
+                                    )}
+                                </div>
+                              </div>
+                            ))}
+                        </>
+                      )}
+                      {result.comments && result.comments.length > 10 && (
                         <p className="text-center text-gray-400 text-sm mt-4">
-                          Showing 5 of {result.comments.length} comments.
+                          Showing 10 of {result.comments.length} comments.
                           Download the report to see all comments.
                         </p>
                       )}

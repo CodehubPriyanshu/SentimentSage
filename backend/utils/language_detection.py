@@ -6,13 +6,13 @@ import logging
 from typing import Dict, List, Any, Tuple, Optional
 import emoji
 from langdetect import detect, LangDetectException
-from googletrans import Translator
+# Use deep_translator instead of googletrans which has compatibility issues
+from deep_translator import GoogleTranslator
 from flask import current_app
 
 logger = logging.getLogger(__name__)
 
-# Initialize translator
-translator = Translator()
+# No need to initialize translator as deep_translator creates it on demand
 
 def detect_language(text: str) -> str:
     """
@@ -58,8 +58,15 @@ def translate_to_english(text: str, source_lang: Optional[str] = None) -> str:
         if source_lang == 'en':
             return text
 
-        translation = translator.translate(text, src=source_lang, dest='en')
-        return translation.text
+        # Use deep_translator's GoogleTranslator
+        translator = GoogleTranslator(source=source_lang, target='en')
+        translated_text = translator.translate(text)
+
+        if translated_text:
+            return translated_text
+        else:
+            logger.warning(f"Translation returned empty result for text: {text[:50]}...")
+            return text
     except Exception as e:
         logger.warning(f"Translation error: {str(e)} for text: {text[:50]}...")
         return text  # Return original text if translation fails
