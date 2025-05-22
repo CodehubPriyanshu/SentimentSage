@@ -12,6 +12,7 @@ from models import init_db
 from routes.auth import auth_bp
 from routes.profile import profile_bp
 from routes.analysis import analysis_bp
+from routes.developer import developer_bp
 from utils.error_handler import setup_error_handlers
 from middleware import setup_middleware
 
@@ -35,11 +36,13 @@ def create_app(config_name='default'):
     # Ensure upload directories exist
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     os.makedirs(app.config['PROFILE_PHOTOS_FOLDER'], exist_ok=True)
+    os.makedirs(app.config['FRONTEND_ASSETS_FOLDER'], exist_ok=True)
 
     # Register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(analysis_bp)
+    app.register_blueprint(developer_bp)
 
     # Set up error handlers
     setup_error_handlers(app)

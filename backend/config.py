@@ -18,6 +18,7 @@ class Config:
     # File upload configuration
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/uploads')
     PROFILE_PHOTOS_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/profile_photos')
+    FRONTEND_ASSETS_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../frontend/public/assets')
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB max upload size
 
     # API Keys (should be set in environment variables in production)

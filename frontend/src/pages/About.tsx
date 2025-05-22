@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,10 @@ import {
   Linkedin,
   Twitter,
   Instagram,
+  Camera,
+  Loader2,
 } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 import ContentModal from "@/components/ContentModal";
 
 interface TeamMemberProps {
@@ -69,6 +72,67 @@ const About = () => {
     description: "",
     content: <></>,
   });
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoUpload = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+
+    // Check if it's an image file
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Invalid File",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setUploadingPhoto(true);
+
+      // Create a FormData object
+      const formData = new FormData();
+      formData.append("photo", file);
+
+      // Upload the file directly to replace the developer photo
+      const response = await fetch("/api/developer/photo", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to upload developer photo");
+      }
+
+      toast({
+        title: "Success",
+        description: "Developer photo updated successfully",
+      });
+
+      // Refresh the page to show the new photo
+      window.location.reload();
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      toast({
+        title: "Error",
+        description: "Failed to upload developer photo",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   const openPrivacyModal = () => {
     setModalContent({
@@ -236,9 +300,27 @@ const About = () => {
                       className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="bg-blue/80 text-white px-3 py-1 rounded-full text-sm">
-                      Developer Photo
+                  <button
+                    className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={handlePhotoUpload}
+                    disabled={uploadingPhoto}
+                  >
+                    {uploadingPhoto ? (
+                      <Loader2 className="h-8 w-8 text-white animate-spin" />
+                    ) : (
+                      <Camera className="h-8 w-8 text-white" />
+                    )}
+                  </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <div className="bg-blue/80 text-white px-3 py-1 rounded-full text-sm mt-32">
+                      Click to upload photo
                     </div>
                   </div>
                 </div>
