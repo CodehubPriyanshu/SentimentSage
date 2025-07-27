@@ -65,6 +65,9 @@ def create_app(config_name='default'):
 
     return app
 
+# Create the app for Vercel serverless function
+app = create_app(os.getenv('FLASK_CONFIG', 'production'))
+
 if __name__ == '__main__':
     try:
         # Set up logging to console
@@ -78,7 +81,7 @@ if __name__ == '__main__':
         # Log startup information
         logging.info("Starting Sage Sentiment Spark backend")
 
-        # Create and run the app
+        # Create and run the app for local development
         app = create_app(os.getenv('FLASK_CONFIG', 'development'))
         logging.info(f"Configuration: {os.getenv('FLASK_CONFIG', 'development')}")
         app.run(host='0.0.0.0', port=5000, debug=app.config['DEBUG'])

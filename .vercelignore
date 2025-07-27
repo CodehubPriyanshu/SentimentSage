@@ -1,0 +1,34 @@
+# Node modules
+node_modules
+
+# Python virtual environment
+venv
+.env
+
+# Development files
+.git
+.github
+.gitignore
+.vscode
+
+# Docker files
+Dockerfile*
+docker-compose*
+.dockerignore
+nginx
+
+# Local development files
+*.log
+*.sqlite
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Test files
+test_*
+
+# Build artifacts that will be generated during deployment
+frontend/dist
+frontend/build

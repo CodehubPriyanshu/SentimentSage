@@ -1,0 +1,26 @@
+# This file is used by Vercel to install Python dependencies
+# It includes the same dependencies as the backend/requirements.txt file
+
+flask==2.3.3
+flask-cors==4.0.0
+flask-sqlalchemy==3.1.1
+flask-migrate==4.0.5
+flask-jwt-extended==4.6.0
+werkzeug==2.3.7
+pandas==2.1.1
+numpy==1.26.0
+scikit-learn==1.3.2
+matplotlib==3.8.0
+seaborn==0.13.0
+requests==2.31.0
+python-dotenv==1.0.0
+bcrypt==4.1.1
+google-api-python-client==2.108.0
+google-auth==2.23.4
+google-auth-oauthlib==1.1.0
+google-auth-httplib2==0.1.1
+tweepy==4.14.0
+transformers==4.35.2
+torch>=2.0.0
+openai==1.3.7
+gunicorn==21.2.0
