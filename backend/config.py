@@ -43,7 +43,7 @@ class Config:
     USE_MOCK_EMAIL = os.environ.get('USE_MOCK_EMAIL', 'True').lower() in ('true', '1', 't')
 
     # CORS configuration
-    CORS_ORIGINS = ['http://localhost:8080', 'http://localhost:8081', 'http://localhost:8082', 'http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173', 'http://127.0.0.1:8080', 'http://127.0.0.1:8081', 'http://127.0.0.1:8082']
+    CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173').split(',')
 
 class DevelopmentConfig(Config):
     DEBUG = True

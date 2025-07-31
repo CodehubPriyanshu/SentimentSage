@@ -1,0 +1,21 @@
+# Minimal requirements for basic functionality
+flask==2.3.3
+flask-cors==4.0.0
+flask-sqlalchemy==3.1.1
+flask-migrate==4.0.5
+flask-jwt-extended==4.6.0
+werkzeug==2.3.7
+pandas==2.1.1
+numpy==1.26.0
+requests==2.31.0
+python-dotenv==1.0.0
+bcrypt==4.1.1
+gunicorn==21.2.0
+
+# Optional: Add these only if you need specific features
+# scikit-learn==1.3.2  # For ML-based sentiment analysis
+# transformers==4.35.2  # For advanced NLP models
+# torch>=2.0.0  # For deep learning models
+# openai==1.3.7  # For OpenAI API integration
+# tweepy==4.14.0  # For Twitter API
+# google-api-python-client==2.108.0  # For Google APIs

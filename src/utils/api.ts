@@ -9,8 +9,8 @@ import {
   ApiError,
 } from "./errorHandler";
 
-// Use the correct port for the backend server
-const API_URL = "http://127.0.0.1:5000/api";
+// Use environment variable for API URL with fallback
+const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 // Default timeout for fetch requests (in milliseconds)
 const DEFAULT_TIMEOUT = 30000; // 30 seconds
