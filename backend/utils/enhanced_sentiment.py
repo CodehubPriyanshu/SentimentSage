@@ -5,7 +5,7 @@ import logging
 import re
 from typing import Dict, List, Any, Tuple, Optional
 from flask import current_app
-import emoji
+# import emoji  # Temporarily commented out for testing
 import numpy as np
 
 from .language_detection import (

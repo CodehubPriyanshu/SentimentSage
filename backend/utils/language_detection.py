@@ -4,7 +4,7 @@ Utility functions for language detection and multilingual processing
 import re
 import logging
 from typing import Dict, List, Any, Tuple, Optional
-import emoji
+# import emoji  # Temporarily commented out for testing
 from langdetect import detect, LangDetectException
 # Use deep_translator instead of googletrans which has compatibility issues
 from deep_translator import GoogleTranslator
@@ -81,7 +81,9 @@ def extract_emojis(text: str) -> List[str]:
     Returns:
         List of emojis found in the text
     """
-    return [c for c in text if c in emoji.EMOJI_DATA]
+    # Temporarily disabled emoji extraction
+    return []
+    # return [c for c in text if c in emoji.EMOJI_DATA]
 
 def interpret_emojis(emojis: List[str]) -> Dict[str, float]:
     """

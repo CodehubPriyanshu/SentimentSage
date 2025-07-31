@@ -11,7 +11,7 @@ from .sentiment_analysis import analyze_sentiment, analyze_multiple_texts
 # Import for Hugging Face sentiment analysis
 import requests
 from transformers import pipeline
-from emoji import demojize
+# from emoji import demojize  # Temporarily commented out for testing
 import os
 
 # Initialize Hugging Face sentiment analysis model
@@ -95,8 +95,8 @@ def preprocess_tweet_text(text: str) -> str:
     Returns:
         Preprocessed text
     """
-    # Convert emojis to text representation
-    text = demojize(text)
+    # Convert emojis to text representation (temporarily disabled)
+    # text = demojize(text)
 
     # Remove URLs
     text = re.sub(r'https?://\S+|www\.\S+', '', text)
