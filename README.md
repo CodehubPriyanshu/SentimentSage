@@ -1,9 +1,32 @@
-# SentimentSage Frontend
+# SentimentSage - Full-Stack Sentiment Analysis Platform
 
-A modern React + TypeScript + Vite frontend application for sentiment analysis and data visualization.
+A comprehensive full-stack application for sentiment analysis and data visualization, built with modern web technologies and machine learning capabilities.
+
+## 🎯 Overview
+
+SentimentSage is a powerful sentiment analysis platform that allows users to analyze text sentiment from various sources including:
+
+- **Text Analysis** - Direct text input sentiment analysis
+- **CSV File Analysis** - Bulk sentiment analysis from CSV datasets
+- **Twitter Analysis** - Social media sentiment tracking
+- **YouTube Analysis** - Video comment sentiment analysis
+- **Real-time Processing** - Live sentiment analysis with streaming updates
+
+## 🏗️ Architecture
+
+This project follows a modern full-stack architecture with clear separation of concerns:
+
+```
+SentimentSage/
+├── frontend/          # React + TypeScript + Vite frontend
+├── backend/           # Python Flask API with ML capabilities
+├── vercel.json        # Deployment configuration
+└── README.md          # This file
+```
 
 ## 🚀 Technologies Used
 
+### Frontend
 - **React 18** - Modern React with hooks and functional components
 - **TypeScript** - Type-safe JavaScript development
 - **Vite** - Fast build tool and development server
@@ -11,173 +34,223 @@ A modern React + TypeScript + Vite frontend application for sentiment analysis a
 - **Shadcn/ui** - Beautiful and accessible UI components
 - **React Router** - Client-side routing
 - **React Query** - Server state management
-- **React Hook Form** - Form handling with validation
 - **Recharts** - Data visualization and charts
-- **Lucide React** - Beautiful icons
+
+### Backend
+- **Flask** - Lightweight Python web framework
+- **MongoDB** - NoSQL database for data storage
+- **JWT Authentication** - Secure user authentication
+- **Scikit-learn** - Machine learning for sentiment analysis
+- **Pandas & NumPy** - Data manipulation and analysis
+- **Gunicorn** - WSGI HTTP Server for production
+
+### Optional Integrations
+- **OpenAI API** - Advanced AI-powered insights
+- **Twitter API** - Social media data collection
+- **YouTube API** - Video comment analysis
+- **Google APIs** - Additional data sources
+
+## 🛠️ Quick Start
+
+### Prerequisites
+- **Node.js 18+** (for frontend)
+- **Python 3.8+** (for backend)
+- **MongoDB** (local or cloud instance)
+- **Git** (for version control)
+
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd SentimentSage
+```
+
+### 2. Setup Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+The frontend will be available at `http://localhost:5173`
+
+### 3. Setup Backend
+```bash
+cd backend
+python -m venv venv
+
+# On Windows
+venv\Scripts\activate
+
+# On macOS/Linux
+source venv/bin/activate
+
+pip install -r requirements.txt
+python app.py
+```
+The backend API will be available at `http://localhost:5000`
+
+### 4. Environment Configuration
+
+**Frontend** (`frontend/.env`):
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+**Backend** (`backend/.env`):
+```env
+FLASK_CONFIG=development
+SECRET_KEY=your-secret-key
+JWT_SECRET_KEY=your-jwt-secret
+MONGODB_URI=mongodb://localhost:27017/sage_sentiment
+CORS_ORIGINS=http://localhost:5173
+```
 
 ## 📁 Project Structure
 
+### Frontend (`/frontend`)
 ```
+frontend/
 ├── src/
 │   ├── components/     # Reusable UI components
 │   ├── pages/         # Page components
 │   ├── hooks/         # Custom React hooks
 │   ├── utils/         # Utility functions
-│   ├── types/         # TypeScript type definitions
-│   └── lib/           # Configuration and setup
+│   └── lib/           # Configuration files
 ├── public/            # Static assets
-├── dist/              # Build output (generated)
+├── dist/              # Build output
 └── package.json       # Dependencies and scripts
 ```
 
-## 🛠️ Setup Instructions
-
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn package manager
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd SentimentSage
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Environment Configuration**
-   Create a `.env` file in the root directory:
-   ```env
-   VITE_API_BASE_URL=http://localhost:5000/api
-   # For production, update this to your backend URL
-   # VITE_API_BASE_URL=https://your-backend-url.com/api
-   ```
-
-4. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-   The application will be available at `http://localhost:5173`
-
-## 🏗️ Build and Deployment
-
-### Development Build
-```bash
-npm run build:dev
+### Backend (`/backend`)
 ```
-
-### Production Build
-```bash
-npm run build
-```
-
-### Preview Production Build
-```bash
-npm run preview
+backend/
+├── routes/            # API route blueprints
+├── models/            # Database models
+├── utils/             # Backend utilities
+├── static/            # File uploads and static files
+├── app.py             # Main Flask application
+├── config.py          # Configuration settings
+└── requirements.txt   # Python dependencies
 ```
 
 ## 🚀 Deployment
 
-### Vercel Deployment (Recommended)
+### Frontend (Vercel)
+The project is configured for Vercel deployment with the frontend as the build root:
 
-This project is optimized for Vercel deployment:
+1. Connect your repository to Vercel
+2. Vercel will automatically detect the configuration
+3. Set environment variables in Vercel dashboard
+4. Deploy automatically on every push
 
-1. **Connect to Vercel**
-   - Push your code to GitHub/GitLab/Bitbucket
-   - Import the project in Vercel dashboard
-   - Vercel will automatically detect the Vite configuration
+### Backend (Multiple Options)
+- **Render** (Recommended for ML workloads)
+- **Railway** (Easy deployment)
+- **Google Cloud Run** (Containerized deployment)
+- **Heroku** (Traditional PaaS)
 
-2. **Environment Variables**
-   Set the following in Vercel dashboard:
-   ```
-   VITE_API_BASE_URL=https://your-backend-url.com/api
-   ```
-
-3. **Deploy**
-   - Vercel will automatically build and deploy on every push to main branch
-   - Build command: `npm run build`
-   - Output directory: `dist`
-
-### Other Deployment Options
-
-- **Netlify**: Works out of the box with Vite
-- **GitHub Pages**: Use `npm run build` and deploy the `dist` folder
-- **AWS S3 + CloudFront**: Upload `dist` folder contents
+See `DEPLOYMENT.md` for detailed deployment instructions.
 
 ## 🔧 Development
 
-### Code Quality
+### Frontend Development
 ```bash
-npm run lint          # Run ESLint
-npm run lint:fix      # Fix ESLint issues automatically
+cd frontend
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
 ```
 
-### Type Checking
-TypeScript is configured for strict type checking. The build will fail if there are type errors.
-
-## 🔗 Backend Integration
-
-This frontend is designed to work with the SentimentSage Python backend. 
-
-### API Configuration
-- Update `VITE_API_BASE_URL` in your environment variables
-- The frontend expects the backend to be available at `/api` endpoints
-- CORS is handled by the backend configuration
-
-### Backend Repository
-The backend should be deployed separately. See the `backend/` directory for deployment instructions.
-
-## 🎨 UI Components
-
-This project uses Shadcn/ui components which are:
-- Fully customizable
-- Accessible by default
-- Built with Radix UI primitives
-- Styled with Tailwind CSS
-
-### Adding New Components
+### Backend Development
 ```bash
-npx shadcn-ui@latest add [component-name]
+cd backend
+python app.py        # Start development server
+python -m pytest    # Run tests
 ```
 
-## 🔍 Features
+## 🌟 Features
 
+### Core Features
+- **Multi-source Analysis** - Text, CSV, Twitter, YouTube
+- **Real-time Processing** - Live updates and streaming
+- **User Authentication** - Secure JWT-based auth
+- **Data Visualization** - Interactive charts and graphs
+- **Export Capabilities** - PDF reports and data export
 - **Responsive Design** - Works on all device sizes
-- **Dark/Light Mode** - Theme switching capability
-- **Type Safety** - Full TypeScript coverage
-- **Modern UI** - Clean and professional interface
-- **Performance Optimized** - Fast loading and smooth interactions
-- **Error Handling** - Comprehensive error boundaries and validation
+
+### Advanced Features
+- **AI-Powered Insights** - Enhanced analysis with OpenAI
+- **Batch Processing** - Handle large datasets efficiently
+- **Historical Tracking** - Save and compare analyses
+- **Custom Models** - Extensible ML pipeline
+- **API Integration** - RESTful API for external use
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+- Follow TypeScript conventions for frontend
+- Follow PEP 8 style guide for backend
+- Add tests for new features
+- Update documentation as needed
+
+## 📝 API Documentation
+
+The backend provides a RESTful API with the following main endpoints:
+
+- `POST /api/auth/login` - User authentication
+- `POST /api/analyze/text` - Text sentiment analysis
+- `POST /api/analyze/csv` - CSV file analysis
+- `POST /api/analyze/twitter` - Twitter analysis
+- `POST /api/analyze/youtube` - YouTube analysis
+- `GET /api/profile/analyses` - Get user's analysis history
+
+## 🔒 Security
+
+- JWT-based authentication
+- CORS protection
+- Input validation and sanitization
+- Secure file upload handling
+- Environment-based configuration
+- Rate limiting (configurable)
+
+## 📊 Performance
+
+- **Frontend**: Code splitting, lazy loading, optimized bundles
+- **Backend**: Efficient database queries, caching, async processing
+- **Deployment**: CDN, compression, auto-scaling
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **Build Errors**
-   - Ensure all dependencies are installed: `npm install`
-   - Check TypeScript errors: `npm run build`
+1. **CORS Errors**: Ensure backend CORS_ORIGINS includes frontend URL
+2. **Database Connection**: Verify MongoDB connection string
+3. **API Timeouts**: Check network connectivity and server status
+4. **Build Errors**: Ensure all dependencies are installed
 
-2. **API Connection Issues**
-   - Verify `VITE_API_BASE_URL` is correctly set
-   - Check if backend is running and accessible
-   - Verify CORS configuration on backend
+### Getting Help
 
-3. **Development Server Issues**
-   - Clear node_modules and reinstall: `rm -rf node_modules && npm install`
-   - Clear Vite cache: `rm -rf node_modules/.vite`
-
-## 📝 Contributing
-
-1. Follow the existing code style and TypeScript conventions
-2. Add proper error handling for all API calls
-3. Include proper TypeScript types for all new features
-4. Test your changes thoroughly before submitting
+- Check the `DEPLOYMENT.md` guide for deployment issues
+- Review the frontend README for development setup
+- Check backend logs for API errors
+- Open an issue for bugs or feature requests
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Built with modern web technologies and best practices
+- Inspired by the need for accessible sentiment analysis tools
+- Thanks to the open-source community for amazing libraries and tools
+
+---
+
+**Ready to analyze sentiment like never before!** 🚀
