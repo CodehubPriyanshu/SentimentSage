@@ -1,0 +1,16 @@
+{
+  "name": "sentimentsage",
+  "version": "1.0.0",
+  "description": "Sentiment Analysis Platform",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo \"No root build needed\"",
+    "start": "echo \"Using Procfile instead\""
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
