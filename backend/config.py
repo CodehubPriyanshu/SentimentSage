@@ -4,7 +4,7 @@ from datetime import timedelta
 class Config:
     # Flask configuration
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-    DEBUG = os.environ.get('FLASK_DEBUG', 'True') == 'True'
+    DEBUG = os.environ.get('FLASK_DEBUG', 'False') == 'True'
 
     # MongoDB configuration
     MONGODB_URI = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/sage_sentiment')
@@ -43,7 +43,7 @@ class Config:
     USE_MOCK_EMAIL = os.environ.get('USE_MOCK_EMAIL', 'True').lower() in ('true', '1', 't')
 
     # CORS configuration
-    CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173').split(',')
+    CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*').split(',')
 
 class DevelopmentConfig(Config):
     DEBUG = True
@@ -62,5 +62,5 @@ config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
-    'default': DevelopmentConfig
+    'default': ProductionConfig
 }

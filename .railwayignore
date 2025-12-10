@@ -1,0 +1,53 @@
+# Node.js dependencies
+frontend/node_modules/
+
+# Python cache and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+.coveragerc
+.cache
+.pytest_cache/
+eggs/
+*.egg-info/
+dist/
+build/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+include/
+pyvenv.cfg
+venv/
+env/
+ENV/
+
+# Logs
+*.log
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Frontend build artifacts (we'll rebuild these)
+frontend/dist/
+frontend/build/

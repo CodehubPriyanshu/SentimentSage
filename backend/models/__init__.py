@@ -13,5 +13,16 @@ def init_db(app: Flask):
         app.logger.info(f"MongoDB connection initialized for database: {app.config['MONGODB_DB_NAME']}")
     else:
         app.logger.warning("MongoDB URI not found in environment variables")
+    
+    # Try to establish connection
+    try:
+        from db.mongo_client import get_db
+        db = get_db()
+        if db is None:
+            app.logger.warning("MongoDB connection failed. Application will run with limited functionality.")
+        else:
+            app.logger.info("MongoDB connection established successfully.")
+    except Exception as e:
+        app.logger.warning(f"MongoDB connection error: {str(e)}. Application will run with limited functionality.")
 
     return app

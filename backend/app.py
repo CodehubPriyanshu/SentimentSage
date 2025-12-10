@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 import os
@@ -18,7 +18,7 @@ from middleware import setup_middleware
 
 def create_app(config_name='default'):
     """Create and configure the Flask application"""
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='../frontend/dist', static_url_path='')
     app.config.from_object(config[config_name])
 
     # Configure logging
@@ -27,8 +27,8 @@ def create_app(config_name='default'):
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
 
-    # Initialize extensions
-    CORS(app, resources={r"/api/*": {"origins": app.config['CORS_ORIGINS']}}, supports_credentials=True)
+    # Configure CORS for all routes
+    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     # Initialize JWT manager
     JWTManager(app)
     init_db(app)
@@ -55,17 +55,28 @@ def create_app(config_name='default'):
     def ping():  # pylint: disable=unused-variable
         return jsonify({'status': 'ok', 'timestamp': time.time()}), 200
 
-    # Root route
-    @app.route('/')
-    def index():  # pylint: disable=unused-variable
-        return jsonify({
-            'message': 'Sage Sentiment Spark API',
-            'version': '1.0.0'
-        })
+    # Serve React frontend build files
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve_frontend(path):  # pylint: disable=unused-variable
+        # If it's an API route, continue with normal 404 handling
+        if path.startswith('api/'):
+            return jsonify({'error': 'Not found'}), 404
+        
+        # Try to serve the requested file from the build directory
+        try:
+            if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+                return send_from_directory(app.static_folder, path)
+            else:
+                # For all other routes, serve index.html (for SPA routing)
+                return send_from_directory(app.static_folder, 'index.html')
+        except Exception as e:
+            # If there's an error serving the file, fall back to index.html
+            return send_from_directory(app.static_folder, 'index.html')
 
     return app
 
-# Create the app for Vercel serverless function
+# Create the app for Railway deployment
 app = create_app(os.getenv('FLASK_CONFIG', 'production'))
 
 if __name__ == '__main__':
@@ -81,10 +92,13 @@ if __name__ == '__main__':
         # Log startup information
         logging.info("Starting Sage Sentiment Spark backend")
 
-        # Create and run the app for local development
-        app = create_app(os.getenv('FLASK_CONFIG', 'development'))
-        logging.info(f"Configuration: {os.getenv('FLASK_CONFIG', 'development')}")
-        app.run(host='0.0.0.0', port=5000, debug=app.config['DEBUG'])
+        # Get port from environment variable or default to 8080 for Railway
+        port = int(os.environ.get('PORT', 8080))
+        
+        # Create and run the app for Railway deployment
+        app = create_app(os.getenv('FLASK_CONFIG', 'production'))
+        logging.info(f"Configuration: {os.getenv('FLASK_CONFIG', 'production')}")
+        app.run(host='0.0.0.0', port=port, debug=False)
     except Exception as e:
         # Log any exceptions during startup
         print(f"ERROR: Failed to start application: {str(e)}")
