@@ -2,19 +2,20 @@
 builder = "NIXPACKS"
 
 [phases.setup]
-nixPkgs = ["nodejs_18", "python311", "pip"]
+nixPkgs = ["python311", "pip", "nodejs_18"]
 
 [phases.install]
 cmds = [
-  "cd frontend && npm install",
-  "cd backend && pip install -r requirements.txt"
+  "cd backend && pip install -r requirements.txt",
+  "cd frontend && npm install"
 ]
 
 [phases.build]
 cmds = [
   "cd frontend && npm run build",
-  "cp -r frontend/dist backend/static"
+  "mkdir -p backend/static",
+  "cp -r frontend/dist/* backend/static/"
 ]
 
 [start]
-cmd = "python backend/app.py"
+cmd = "python3 backend/app.py"
