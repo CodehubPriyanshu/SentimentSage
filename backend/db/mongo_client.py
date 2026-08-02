@@ -71,23 +71,44 @@ class MongoConnection:
 
     def initialize_connection(self):
         """Initialize MongoDB connection"""
-        try:
-            mongo_uri = os.getenv('MONGODB_URI')
-            if not mongo_uri:
-                raise ValueError("MongoDB URI not found in environment variables")
-
-            self.client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
-            self.db = self.client[os.getenv('MONGODB_DB_NAME', 'sage_sentiment')]
-
-            # Test connection
-            self.client.admin.command('ping')
-            self.mock_mode = False
-            logger.info("Successfully connected to MongoDB")
-        except Exception as e:
-            logger.warning(f"Failed to connect to MongoDB: {str(e)}. Running in mock mode.")
+        mongo_uri = os.getenv('MONGODB_URI')
+        if not mongo_uri:
+            logger.warning("MongoDB URI not found in environment variables. Running in mock mode.")
             self.client = None
             self.db = MockDB()
             self.mock_mode = True
+            return
+
+        # Add recommended Atlas connection options if not already present
+        if 'retryWrites' not in mongo_uri and '?' in mongo_uri:
+            mongo_uri += '&retryWrites=true&w=majority'
+        elif 'retryWrites' not in mongo_uri:
+            mongo_uri += '?retryWrites=true&w=majority'
+
+        # Retry a few times to handle transient network/DNS/TLS issues
+        last_error = None
+        for attempt in range(1, 4):
+            try:
+                self.client = MongoClient(mongo_uri, serverSelectionTimeoutMS=10000)
+                self.db = self.client[os.getenv('MONGODB_DB_NAME', 'sage_sentiment')]
+                self.client.admin.command('ping')
+                self.mock_mode = False
+                logger.info(f"Successfully connected to MongoDB (attempt {attempt})")
+                return
+            except Exception as e:
+                last_error = e
+                logger.warning(f"Failed to connect to MongoDB (attempt {attempt}/3): {str(e)}")
+                if self.client:
+                    self.client.close()
+                    self.client = None
+                if attempt < 3:
+                    import time
+                    time.sleep(2)
+
+        logger.warning(f"All MongoDB connection attempts failed: {str(last_error)}. Running in mock mode.")
+        self.client = None
+        self.db = MockDB()
+        self.mock_mode = True
 
     def get_db(self):
         """Get database instance"""

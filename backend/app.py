@@ -40,7 +40,10 @@ def create_app(config_name='default'):
     # Ensure upload directories exist
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     os.makedirs(app.config['PROFILE_PHOTOS_FOLDER'], exist_ok=True)
-    os.makedirs(app.config['FRONTEND_ASSETS_FOLDER'], exist_ok=True)
+    try:
+        os.makedirs(app.config['FRONTEND_ASSETS_FOLDER'], exist_ok=True)
+    except OSError:
+        pass
     
     # Ensure static directory exists for Railway
     os.makedirs('static', exist_ok=True)
