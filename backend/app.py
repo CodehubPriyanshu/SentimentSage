@@ -71,7 +71,16 @@ def create_app(config_name='default'):
     def serve(path):  # pylint: disable=unused-variable
         if path and os.path.exists(os.path.join("static", path)):
             return send_from_directory("static", path)
-        return send_from_directory("static", "index.html")
+        index_path = os.path.join("static", "index.html")
+        if os.path.exists(index_path):
+            return send_from_directory("static", "index.html")
+        return jsonify({
+            'name': 'Sentiment Sage API',
+            'version': '1.0.0',
+            'status': 'ok',
+            'docs': '/docs' if 'flask' in sys.modules else '/api/ping',
+            'endpoints': ['/api/ping', '/api/auth/login', '/api/auth/register']
+        }), 200
 
     return app
 
