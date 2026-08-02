@@ -2,11 +2,8 @@
  * Utility functions for CSV file analysis
  */
 
-// API endpoint for CSV analysis
-const API_URL = "http://localhost:5000/api";
-
 // Import the analysis API
-import { analysisApi } from "./api";
+import { analysisApi, API_URL } from "./api";
 
 export interface ColumnAnalysis {
   name: string;

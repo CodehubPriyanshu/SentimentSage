@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { Wifi, WifiOff } from 'lucide-react';
 import errorLogger from '@/utils/errorLogger';
+import { API_URL } from '@/utils/api';
 
 /**
  * EnhancedNetworkMonitor component
@@ -24,7 +25,7 @@ const EnhancedNetworkMonitor: React.FC = () => {
 
     try {
       const startTime = Date.now();
-      const response = await fetch('/api/ping', { 
+      const response = await fetch(`${API_URL}/ping`, { 
         method: 'HEAD',
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache' }

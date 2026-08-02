@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import ContentModal from "@/components/ContentModal";
+import { API_URL } from "@/utils/api";
 
 interface TeamMemberProps {
   name: string;
@@ -105,7 +106,7 @@ const About = () => {
       formData.append("photo", file);
 
       // Upload the file directly to replace the developer photo
-      const response = await fetch("/api/developer/photo", {
+      const response = await fetch(`${API_URL}/developer/photo`, {
         method: "POST",
         body: formData,
       });

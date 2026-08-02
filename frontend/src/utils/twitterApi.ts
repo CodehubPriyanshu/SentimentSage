@@ -1,4 +1,4 @@
-import { analysisApi } from "./api";
+import { analysisApi, API_URL } from "./api";
 import { analyzeSentiment } from "./sentimentAnalysis";
 import {
   detectEmotions,
@@ -63,7 +63,7 @@ export const fetchUserTweets = async (
 
     // First, try to fetch real tweets from our backend API
     const response = await fetch(
-      `http://127.0.0.1:5000/api/analyze/twitter/fetch?${params.toString()}`,
+      `${API_URL}/analyze/twitter/fetch?${params.toString()}`,
       {
         method: "GET",
         headers: {

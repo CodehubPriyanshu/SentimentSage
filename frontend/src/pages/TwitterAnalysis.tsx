@@ -37,6 +37,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { exportAnalysisAsPDF } from "@/utils/pdfExport";
+import { API_URL } from "@/utils/api";
 
 // Tweet interface is now imported from twitterApi.ts
 
@@ -176,7 +177,7 @@ const TwitterAnalysis = () => {
         try {
           // Fetch user info directly from the API
           const response = await fetch(
-            `http://127.0.0.1:5000/api/analyze/twitter/fetch?username=${encodeURIComponent(
+            `${API_URL}/analyze/twitter/fetch?username=${encodeURIComponent(
               cleanHandle
             )}`,
             {

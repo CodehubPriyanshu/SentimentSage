@@ -10,7 +10,7 @@ import {
 } from "./errorHandler";
 
 // Use environment variable for API URL with fallback
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+export const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 // Default timeout for fetch requests (in milliseconds)
 const DEFAULT_TIMEOUT = 30000; // 30 seconds
