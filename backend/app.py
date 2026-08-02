@@ -7,6 +7,10 @@ import sys
 import traceback
 import time
 
+# Load environment variables from .env BEFORE importing config
+from dotenv import load_dotenv
+load_dotenv()
+
 from config import config
 from models import init_db
 from routes.auth import auth_bp
