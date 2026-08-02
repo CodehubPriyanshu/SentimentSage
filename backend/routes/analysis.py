@@ -631,7 +631,19 @@ def analyze_youtube():
                           mimetype='application/x-json-stream')
 
         # For non-streaming requests, use the original approach
-        result = analyze_youtube_comments(video_url, api_key)
+        # analyze_youtube_comments is a generator function, so consume it to get
+        # the final result (delivered via StopIteration.value when not streaming)
+        result = None
+        gen = analyze_youtube_comments(video_url, api_key)
+        try:
+            while True:
+                result = next(gen)
+        except StopIteration as stop:
+            if stop.value is not None:
+                result = stop.value
+
+        if result is None:
+            return jsonify({'error': 'Analysis failed to produce a result'}), 500
 
         if 'error' in result:
             return jsonify({'error': result['error']}), 400

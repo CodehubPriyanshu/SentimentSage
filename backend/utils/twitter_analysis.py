@@ -10,7 +10,8 @@ from .sentiment_analysis import analyze_sentiment, analyze_multiple_texts
 
 # Import for Hugging Face sentiment analysis
 import requests
-from transformers import pipeline
+# transformers is imported lazily in get_sentiment_analyzer() so the app
+# boots even when torch/transformers are not installed (e.g. Render free tier)
 # from emoji import demojize  # Temporarily commented out for testing
 import os
 
@@ -27,6 +28,7 @@ def get_sentiment_analyzer():
     global _sentiment_analyzer
     if _sentiment_analyzer is None:
         try:
+            from transformers import pipeline
             # Use a model that's good for social media text
             _sentiment_analyzer = pipeline(
                 "sentiment-analysis",
@@ -37,11 +39,16 @@ def get_sentiment_analyzer():
             import logging
             logger = logging.getLogger(__name__)
             logger.error(f"Error loading sentiment model: {str(e)}", exc_info=True)
-            # Fallback to a smaller model if the first one fails
-            _sentiment_analyzer = pipeline(
-                "sentiment-analysis",
-                model="distilbert-base-uncased-finetuned-sst-2-english"
-            )
+            try:
+                from transformers import pipeline
+                # Fallback to a smaller model if the first one fails
+                _sentiment_analyzer = pipeline(
+                    "sentiment-analysis",
+                    model="distilbert-base-uncased-finetuned-sst-2-english"
+                )
+            except Exception as e2:
+                logger.error(f"Error loading fallback sentiment model: {str(e2)}", exc_info=True)
+                _sentiment_analyzer = None
     return _sentiment_analyzer
 
 def setup_twitter_api_v1(api_key: str, api_secret: str, access_token: str, access_secret: str) -> tweepy.API:

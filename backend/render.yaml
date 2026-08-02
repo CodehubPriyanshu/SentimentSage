@@ -1,9 +1,12 @@
 services:
   - type: web
     name: sentimentsage-backend
-    env: python
+    runtime: python
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    healthCheckPath: /api/ping
+    autoDeploy: true
     envVars:
       - key: FLASK_CONFIG
         value: production
@@ -11,15 +14,31 @@ services:
         generateValue: true
       - key: JWT_SECRET_KEY
         generateValue: true
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB_NAME
+        value: sage_sentiment
       - key: CORS_ORIGINS
-        value: https://your-frontend-domain.vercel.app,http://localhost:5173
-      - key: DATABASE_URL
-        fromDatabase:
-          name: sentimentsage-db
-          property: connectionString
-    healthCheckPath: /api/ping
-    
-databases:
-  - name: sentimentsage-db
-    databaseName: sentimentsage
-    user: sentimentsage
+        value: https://sentiment-sage42984.vercel.app,http://localhost:5173,http://localhost:3000
+      - key: YOUTUBE_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: HUGGINGFACE_API_KEY
+        sync: false
+      - key: TWITTER_API_KEY
+        sync: false
+      - key: TWITTER_API_SECRET
+        sync: false
+      - key: TWITTER_ACCESS_TOKEN
+        sync: false
+      - key: TWITTER_ACCESS_SECRET
+        sync: false
+      - key: AI_ENABLED
+        value: "True"
+      - key: AI_PROVIDER
+        value: openai
+      - key: USE_MOCK_EMAIL
+        value: "True"
+      - key: MAX_CONTENT_LENGTH
+        value: "16777216"

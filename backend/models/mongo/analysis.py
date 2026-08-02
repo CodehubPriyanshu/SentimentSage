@@ -24,7 +24,7 @@ class Analysis:
     def create(cls, user_id, analysis_type, data):
         """Create a new analysis"""
         try:
-            if isinstance(user_id, str):
+            if isinstance(user_id, str) and len(user_id) == 24:
                 try:
                     user_id = ObjectId(user_id)
                 except Exception as e:
@@ -57,7 +57,7 @@ class Analysis:
     @classmethod
     def find_by_id(cls, analysis_id):
         """Find analysis by ID"""
-        if isinstance(analysis_id, str):
+        if isinstance(analysis_id, str) and len(analysis_id) == 24:
             try:
                 analysis_id = ObjectId(analysis_id)
             except:
@@ -68,7 +68,7 @@ class Analysis:
     @classmethod
     def find_by_user(cls, user_id, analysis_type=None, limit=10, skip=0):
         """Find analyses by user ID"""
-        if isinstance(user_id, str):
+        if isinstance(user_id, str) and len(user_id) == 24:
             try:
                 user_id = ObjectId(user_id)
             except:

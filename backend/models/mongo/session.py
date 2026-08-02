@@ -15,11 +15,13 @@ class Session:
     @classmethod
     def create(cls, user_id, token, refresh_token, expires_at):
         """Create a new session"""
-        if isinstance(user_id, str):
+        # Convert to ObjectId only when it is a valid 24-char hex string
+        # (mock mode returns UUID strings, which must be kept as-is)
+        if isinstance(user_id, str) and len(user_id) == 24:
             try:
                 user_id = ObjectId(user_id)
-            except:
-                raise ValueError("Invalid user ID")
+            except Exception:
+                pass
 
         # Create session document
         session_doc = {
@@ -68,8 +70,11 @@ class Session:
         Returns:
             Number of sessions deactivated
         """
-        if isinstance(user_id, str):
-            user_id = ObjectId(user_id)
+        if isinstance(user_id, str) and len(user_id) == 24:
+            try:
+                user_id = ObjectId(user_id)
+            except Exception:
+                pass
 
         query = {'user_id': user_id, 'is_active': True}
 

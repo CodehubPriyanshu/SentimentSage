@@ -20,6 +20,11 @@
 .env.test.local
 .env.production.local
 /backend/.env
+/backend/.env.production
+
+# Runtime uploads (generated at runtime)
+/backend/static/uploads/
+/backend/static/profile_photos/
 
 # Python
 __pycache__/
@@ -28,6 +33,9 @@ __pycache__/
 *.so
 .Python
 env/
+venv/
+.venv/
+backend/venv/
 build/
 develop-eggs/
 dist/

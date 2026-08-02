@@ -40,11 +40,12 @@ class User:
     @classmethod
     def find_by_id(cls, user_id):
         """Find user by ID"""
-        if isinstance(user_id, str):
+        # Keep valid ObjectId hex strings; leave UUID/mock IDs as strings
+        if isinstance(user_id, str) and len(user_id) == 24:
             try:
                 user_id = ObjectId(user_id)
-            except:
-                return None
+            except Exception:
+                pass
 
         return cls.get_collection().find_one({'_id': user_id})
 
