@@ -19,7 +19,7 @@ services:
       - key: MONGODB_DB_NAME
         value: sage_sentiment
       - key: CORS_ORIGINS
-        value: https://sentiment-sage42984.vercel.app,http://localhost:5173,http://localhost:3000
+        value: https://sentiment-sage42984.vercel.app,https://sentiment-sage42984.netlify.app,http://localhost:5173,http://localhost:3000
       - key: YOUTUBE_API_KEY
         sync: false
       - key: OPENAI_API_KEY
