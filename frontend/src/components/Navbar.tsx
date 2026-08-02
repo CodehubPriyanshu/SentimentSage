@@ -100,13 +100,6 @@ const Navbar = () => {
           >
             Features
           </SmoothLink>
-          <SmoothLink
-            to="/about"
-            className={`nav-link ${isActive("/about")}`}
-            transitionType="fade"
-          >
-            About
-          </SmoothLink>
         </div>
 
         {/* User Menu */}
@@ -236,14 +229,6 @@ const Navbar = () => {
               transitionType="slide"
             >
               Features
-            </SmoothLink>
-            <SmoothLink
-              to="/about"
-              className={`nav-link text-lg ${isActive("/about")}`}
-              onClick={toggleMenu}
-              transitionType="fade"
-            >
-              About
             </SmoothLink>
 
             <div className="border-t border-gray-700 dark:border-gray-700 light:border-gray-300 my-4 pt-4">

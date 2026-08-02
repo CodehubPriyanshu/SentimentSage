@@ -13,7 +13,6 @@ import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
-import About from "@/pages/About";
 import HowToUse from "@/pages/HowToUse";
 import Analyze from "@/pages/Analyze";
 import Analysis from "@/pages/Analysis";
@@ -176,14 +175,6 @@ const App = () => {
                               element={
                                 <PageTransition transitionType={transitionType}>
                                   <ResetPassword />
-                                </PageTransition>
-                              }
-                            />
-                            <Route
-                              path="/about"
-                              element={
-                                <PageTransition transitionType={transitionType}>
-                                  <About />
                                 </PageTransition>
                               }
                             />

@@ -276,11 +276,6 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/about" className="hover:text-blue transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
                 <a
                   href="#"
                   onClick={(e) => {
