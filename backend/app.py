@@ -79,7 +79,7 @@ def create_app(config_name='default'):
             'version': '1.0.0',
             'status': 'ok',
             'docs': '/docs' if 'flask' in sys.modules else '/api/ping',
-            'endpoints': ['/api/ping', '/api/auth/login', '/api/auth/register']
+            'endpoints': ['/api/ping', '/api/auth/signup', '/api/auth/login']
         }), 200
 
     return app
